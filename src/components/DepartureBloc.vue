@@ -5,6 +5,7 @@ import type {
   SimpleJourney,
   SimpleLine,
 } from "../services/Wagon";
+import HorizontalStopsList from "./HorizontalStopsList.vue";
 import LineDirection from "./LineDirection.vue";
 
 defineProps<{
@@ -44,6 +45,10 @@ defineProps<{
           :journey-code="departure.journeyCode"
           :leaves-at="departure.leavesAt"
         ></LineDirection>
+        <HorizontalStopsList
+          v-if="journey"
+          :stops="journey.stops.map((x) => x.name)"
+        ></HorizontalStopsList>
       </div>
       <div class="platform" v-if="departure.platform">
         <span>{{ departure.platform }}</span>
@@ -55,6 +60,7 @@ defineProps<{
 <style scoped>
 article {
   --border-radius: 1.36vh;
+  --platform-width: 9vh;
   display: flex;
   flex-direction: column;
 }
@@ -66,7 +72,7 @@ article {
   color: white;
   width: fit-content;
   align-self: end;
-  margin-right: 8vh;
+  margin-right: var(--platform-width);
   padding: 1vh 2vh;
   font-size: 3vh;
 }
@@ -78,6 +84,9 @@ article {
 }
 
 .bloc {
+  display: flex;
+  flex-direction: column;
+  gap: 2vh;
   background-color: #171a3c;
   border-radius: var(--border-radius);
   padding: 2vh;
@@ -91,7 +100,7 @@ article {
   color: #171a3c;
   border: calc(var(--border-radius) / 2) solid #171a3c;
   height: 8vh;
-  width: 8vh;
+  width: var(--platform-width);
   font-weight: bold;
   font-size: 6vh;
   border-radius: 0 1vh 1vh 0;

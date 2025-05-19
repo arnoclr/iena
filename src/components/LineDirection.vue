@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import type { Dayjs } from "dayjs";
+import Time from "./Time.vue";
 
 defineProps<{
   numberShapeSvg?: string;
@@ -10,18 +11,20 @@ defineProps<{
 </script>
 
 <template>
-  <div class="root">
+  <div class="lineDirectionRoot">
     <div class="shape" v-html="numberShapeSvg"></div>
     <div class="texts">
       <span class="journeyCode" v-if="journeyCode">{{ journeyCode }}</span>
       <span class="direction">{{ direction }}</span>
     </div>
-    <span class="time">{{ leavesAt?.format("HH:mm") }}</span>
+    <span class="time">
+      <Time :time="leavesAt"></Time>
+    </span>
   </div>
 </template>
 
 <style scoped>
-.root {
+.lineDirectionRoot {
   display: flex;
   gap: 2.72vh;
 }
@@ -54,8 +57,7 @@ span.journeyCode {
 }
 
 span.time {
-  margin-left: auto;
-  font-size: 5vh;
   padding: 0.4vh;
+  margin-left: auto;
 }
 </style>
