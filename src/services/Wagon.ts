@@ -50,7 +50,8 @@ function processSVG(svg: string): string {
   return svg
     .replace(/width="[^"]+"/, "")
     .replace(/height="[^"]+"/, `height="100%"`)
-    .replace('font-family="', 'font-weight="bold" font-family="Achemine, ');
+    .replace('font-family="', 'font-weight="bold" font-family="Achemine, ')
+    .replace('font-weight="normal"', 'font-weight="bold"');
 }
 
 export class Wagon {

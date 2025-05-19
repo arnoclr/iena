@@ -15,7 +15,7 @@ defineProps<{
     <div class="shape" v-html="numberShapeSvg"></div>
     <div class="texts">
       <span class="journeyCode" v-if="journeyCode">{{ journeyCode }}</span>
-      <span class="direction">{{ direction }} {{ direction }}</span>
+      <span class="direction">{{ direction }}</span>
     </div>
     <span class="time">
       <Time :time="leavesAt"></Time>
@@ -40,7 +40,6 @@ defineProps<{
   align-items: baseline;
   gap: 1.36vh;
   width: 100%;
-  /* flex-direction: column; */
 }
 
 .direction {
