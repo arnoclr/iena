@@ -41,7 +41,7 @@ onMounted(() => {
 <style scoped>
 ul {
   list-style: none;
-  padding: 0;
+  padding: 1.3vh;
   margin: 0;
   display: flex;
   flex-direction: column;

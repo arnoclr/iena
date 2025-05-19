@@ -11,6 +11,12 @@ const props = defineProps<{
   showLabels: boolean;
 }>();
 
+const rowClasses = computed(() => {
+  return {
+    "no-stops": props.journey.stops.length === 0,
+  };
+});
+
 const departure = computed(() => props.journey?.userStopDeparture);
 </script>
 
@@ -36,7 +42,7 @@ const departure = computed(() => props.journey?.userStopDeparture);
         }}
       </span>
     </div>
-    <div class="row">
+    <div class="row" :class="rowClasses">
       <div class="bloc">
         <LineDirection
           :number-shape-svg="line.numberShapeSvg"
@@ -59,7 +65,7 @@ const departure = computed(() => props.journey?.userStopDeparture);
 <style scoped>
 article {
   --border-radius: 1.36vh;
-  --platform-width: 9vh;
+  --platform-width: 10vh;
   display: flex;
   flex-direction: column;
 }
@@ -77,9 +83,20 @@ article {
 }
 
 .row {
-  display: flex;
+  /* display: flex;
   align-items: start;
-  width: 100%;
+  width: 100%; */
+  display: grid;
+  grid-template-columns: calc(100% - var(--platform-width)) var(
+      --platform-width
+    );
+}
+.row.no-stops .bloc {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.row.no-stops .lineDirectionRoot {
+  height: 100%;
 }
 
 .bloc {
@@ -89,7 +106,6 @@ article {
   background-color: #171a3c;
   border-radius: var(--border-radius);
   padding: 2vh;
-  width: 100%;
 }
 
 .platform {
@@ -98,12 +114,13 @@ article {
   background-color: white;
   color: #171a3c;
   border: calc(var(--border-radius) / 2) solid #171a3c;
-  height: 8vh;
+  height: var(--platform-width);
   width: var(--platform-width);
   font-weight: bold;
   font-size: 6vh;
   border-radius: 0 1vh 1vh 0;
   border-left: none;
   box-shadow: calc(-1 * var(--border-radius)) 0 0 0 #171a3c;
+  box-sizing: border-box;
 }
 </style>
