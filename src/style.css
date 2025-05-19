@@ -1,0 +1,22 @@
+@font-face {
+  font-family: "Achemine";
+  src: url("/achemine_bold.ttf");
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: "Achemine";
+  src: url("/achemine_regular.ttf");
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: "Achemine";
+  src: url("/achemine_italic.ttf");
+  font-style: italic;
+}
+
+body {
+  background-color: #CCC;
+  font-family: Achemine, Verdana, Arial, sans-serif;
+}
