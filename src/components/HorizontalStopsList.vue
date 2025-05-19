@@ -1,23 +1,28 @@
 <script lang="ts" setup>
-import { nextTick, onMounted, onUnmounted, ref, watch } from "vue";
+import { onMounted, onUnmounted, ref, watch } from "vue";
 
 const props = defineProps<{
   stops: string[];
 }>();
 
+const LINE_HEIGHT_VH = 8;
+
 const stopsSpan = ref<HTMLSpanElement>();
-const stopsCell = ref<HTMLDivElement>();
 const stopsPagesCount = ref<number>();
 const currentPage = ref<number>(0);
 const stopsPageHeight = ref<number>(0);
 const isTransitionEnabled = ref<boolean>(true);
 let stopsInterval: number | null = null;
 
+function vhToPx(vh: number): number {
+  return (window.innerHeight * vh) / 100;
+}
+
 function updateJourneyStopsPagesCount() {
-  if (!stopsSpan.value || !stopsCell.value) {
+  if (!stopsSpan.value) {
     return;
   }
-  const cellHeight = stopsCell.value.clientHeight;
+  const cellHeight = vhToPx(LINE_HEIGHT_VH);
   const spanHeight = stopsSpan.value.scrollHeight;
   stopsPagesCount.value = Math.ceil(spanHeight / cellHeight);
   stopsPageHeight.value = spanHeight / stopsPagesCount.value;
@@ -55,11 +60,15 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div ref="stopsCell" class="journey">
+  <!-- {{ currentPage }} / {{ stopsPagesCount }} -->
+  <div class="journey">
     <span
       ref="stopsSpan"
       :class="{ transition: isTransitionEnabled }"
-      :style="{ transform: `translateY(-${currentPage * stopsPageHeight}px)` }"
+      :style="{
+        transform: `translateY(-${currentPage * stopsPageHeight}px)`,
+        lineHeight: `${LINE_HEIGHT_VH}vh`,
+      }"
     >
       {{ stops.join(" > ") }}
       <br />
@@ -81,9 +90,9 @@ onUnmounted(() => {
 }
 
 .journey span {
-  line-height: 6vh;
+  margin-top: -1.1vh;
   display: inline-block;
-  height: 7vh;
+  height: 6.6vh;
 }
 
 .journey span.transition {

@@ -151,6 +151,7 @@ export class Wagon {
           journeyCode: departure.journeyCode,
           vehicleLength: departure.vehicleLength,
           platform: departure.platform,
+          vehicleNumber: departure.vehicleNumber,
         };
       })
       .filter(

@@ -10,7 +10,12 @@ export async function getNextJourneys(
   const journeys: SimpleJourney[] = [];
 
   for (const departure of departures.slice(0, 2)) {
-    const journey = await Wagon.journey(departure.id);
+    const journey = await Wagon.journey(
+      departure.id,
+      departure.vehicleNumber,
+      departure.journeyCode,
+      stopArea
+    );
     journeys.push({
       userStopDeparture: departure,
       ...journey,
