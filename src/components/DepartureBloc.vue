@@ -1,23 +1,22 @@
 <script lang="ts" setup>
+import { computed } from "vue";
 import { localized } from "../language";
-import type {
-  SimpleDeparture,
-  SimpleJourney,
-  SimpleLine,
-} from "../services/Wagon";
+import type { SimpleJourney, SimpleLine } from "../services/Wagon";
 import HorizontalStopsList from "./HorizontalStopsList.vue";
 import LineDirection from "./LineDirection.vue";
 
-defineProps<{
-  departure: SimpleDeparture;
+const props = defineProps<{
   line: SimpleLine;
-  journey?: SimpleJourney;
+  journey: SimpleJourney;
+  showLabels: boolean;
 }>();
+
+const departure = computed(() => props.journey?.userStopDeparture);
 </script>
 
 <template>
   <article>
-    <div class="labels">
+    <div class="labels" v-if="showLabels">
       <span v-if="departure.vehicleLength === 'SHORT'">
         {{
           localized({
@@ -46,7 +45,7 @@ defineProps<{
           :leaves-at="departure.leavesAt"
         ></LineDirection>
         <HorizontalStopsList
-          v-if="journey"
+          v-if="journey.stops.length > 0"
           :stops="journey.stops.map((x) => x.name)"
         ></HorizontalStopsList>
       </div>

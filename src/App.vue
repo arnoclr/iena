@@ -1,21 +1,50 @@
 <script setup lang="ts">
+import { onMounted, ref } from "vue";
 import DepartureBloc from "./components/DepartureBloc.vue";
 import { SIMPLE_DEPARTURE, SIMPLE_JOURNEY, SIMPLE_LINE } from "./mock";
 import { useLangStore } from "./stores/lang";
+import type { SimpleJourney } from "./services/Wagon";
+import { getNextJourneys } from "./services/fetch";
 
 const langStore = useLangStore();
+const journeys = ref<SimpleJourney[]>([]);
+
+async function updateJourneys() {
+  journeys.value = await getNextJourneys("stop_area:IDFM:72206", [
+    "line:IDFM:C01728",
+  ]);
+}
 
 setInterval(() => {
   langStore.cycleLang();
 }, 5000);
+
+setInterval(updateJourneys, 60_100);
+
+onMounted(() => {
+  updateJourneys();
+});
 </script>
 
 <template>
-  <DepartureBloc
-    :departure="SIMPLE_DEPARTURE"
-    :line="SIMPLE_LINE"
-    :journey="SIMPLE_JOURNEY"
-  ></DepartureBloc>
+  <ul>
+    <li v-for="(journey, i) in journeys">
+      <DepartureBloc
+        :show-labels="i === 0"
+        :line="journey.line"
+        :journey="journey"
+      ></DepartureBloc>
+    </li>
+  </ul>
 </template>
 
-<style scoped></style>
+<style scoped>
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1vh;
+}
+</style>

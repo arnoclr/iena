@@ -50,7 +50,7 @@ function processSVG(svg: string): string {
   return svg
     .replace(/width="[^"]+"/, "")
     .replace(/height="[^"]+"/, `height="100%"`)
-    .replace('font-family="', 'font-weight="bold" font-family="Parisine, ');
+    .replace('font-family="', 'font-weight="bold" font-family="Achemine, ');
 }
 
 export class Wagon {
@@ -97,33 +97,6 @@ export class Wagon {
       numberShapeSvg: processSVG(lineDto.numberShapeSvg ?? ""),
       importance: lineDto.importance,
     };
-  }
-
-  public static async searchStops(search: string): Promise<SimpleStop[]> {
-    const params = new URLSearchParams();
-    params.append("action", "searchStops");
-    params.append("coordinates", "48.86,2.34");
-    params.append("compatibilityDate", "2024-03-30");
-    params.append("apiKey", this.apiKey);
-    params.append("q", search);
-
-    const response = await fetch(`${this.baseUrl}?${params.toString()}`);
-
-    if (!response.ok) {
-      throw new Error("Failed to search stations");
-    }
-
-    const json = await response.json();
-
-    const lines: SimpleLine[] = json.data.lines.map((line: any) => {
-      return this.lineFromDTO(line);
-    });
-
-    const stops: SimpleStop[] = json.data.stops.map((stop: any) => {
-      return this.stopFromDTO(stop, lines);
-    });
-
-    return stops;
   }
 
   public static async departures(
@@ -176,6 +149,7 @@ export class Wagon {
           branchHash: departure.branchHash,
           journeyCode: departure.journeyCode,
           vehicleLength: departure.vehicleLength,
+          platform: departure.platform,
         };
       })
       .filter(

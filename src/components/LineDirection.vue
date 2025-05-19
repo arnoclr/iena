@@ -25,6 +25,7 @@ defineProps<{
 
 <style scoped>
 .lineDirectionRoot {
+  width: 100%;
   display: flex;
   gap: 2.72vh;
 }
@@ -33,7 +34,15 @@ defineProps<{
   display: flex;
   align-items: baseline;
   gap: 1.36vh;
+  width: 100%;
   /* flex-direction: column; */
+}
+
+.direction {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .shape:deep(svg) {
