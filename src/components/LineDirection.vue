@@ -15,7 +15,7 @@ defineProps<{
   <div class="lineDirectionRoot">
     <div class="shape" v-html="numberShapeSvg"></div>
     <div class="texts">
-      <span class="journeyCode" v-if="journeyCode">{{ journeyCode }}</span>
+      <span class="journeyCode">{{ journeyCode?.slice(0, 4) ?? "" }}</span>
       <span class="direction">{{ direction }}</span>
       <span class="via" v-if="via">via {{ via }}</span>
     </div>
@@ -69,6 +69,7 @@ span.direction {
 
 span.journeyCode {
   font-size: 4.7vh;
+  width: 5ch;
 }
 
 span.via {

@@ -24,6 +24,10 @@ defineProps<{
   background-color: var(--equipment-background);
 }
 
+.labelRoot.medium {
+  background-color: var(--worksite-background);
+}
+
 .labelRoot.high {
   background-color: var(--alert-background);
 }

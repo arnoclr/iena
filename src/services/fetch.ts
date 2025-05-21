@@ -60,6 +60,9 @@ export async function getNextJourneys(
     if (journey.closedStops.size > 0) {
       journey.metadata.flag = "MODIFIED_JOURNEY";
     }
+    if (journey.line.isOnRoad) {
+      journey.metadata.flag = "REPLACEMENT_BUS";
+    }
     // fill the via metadata
     const patterns = journeysPerDestination.get(
       journey.userStopDeparture.destination.name

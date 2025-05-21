@@ -8,6 +8,7 @@ export interface SimpleLine {
   pictoSvg?: string;
   numberShapeSvg?: string;
   importance: number;
+  isOnRoad: boolean;
 }
 
 export interface SimpleStop {
@@ -105,6 +106,7 @@ export class Wagon {
       pictoSvg: processSVG(lineDto.modeSvg ?? ""),
       numberShapeSvg: processSVG(lineDto.numberShapeSvg ?? ""),
       importance: lineDto.importance,
+      isOnRoad: lineDto.isOnRoad,
     };
   }
 
