@@ -30,6 +30,7 @@ export async function getNextJourneys(
       closedStops: new Set<string>(),
       skippedStops: new Set<string>(),
       stops: [],
+      nextStops: [],
     });
   }
 

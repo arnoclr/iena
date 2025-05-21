@@ -27,6 +27,9 @@ export interface SimpleDeparture {
     name: string;
     averagePosition: Position;
   };
+  source: {
+    id: string;
+  };
   leavesAt: Dayjs;
   arrivesAt: Dayjs;
   id: string;
@@ -42,6 +45,7 @@ export type SimpleJourney = {
   line: SimpleLine;
   userStopDeparture: SimpleDeparture;
   stops: SimpleStop[];
+  nextStops: SimpleStop[];
   closedStops: Set<string>;
   skippedStops: Set<string>;
 };
@@ -136,6 +140,9 @@ export class Wagon {
               departure.destination.averagePosition
             ),
           },
+          source: {
+            id: departure.source.id,
+          },
           leavesAt: dayjs(
             departure.departure.realTime ||
               departure.departure.theoretical ||
@@ -165,13 +172,7 @@ export class Wagon {
     vehicleNumber?: string,
     journeyCode?: string,
     userStopAreaId?: string
-  ): Promise<{
-    id: string;
-    stops: SimpleStop[];
-    line: SimpleLine;
-    closedStops: Set<string>;
-    skippedStops: Set<string>;
-  }> {
+  ): Promise<Omit<SimpleJourney, "userStopDeparture">> {
     let params = new URLSearchParams({
       action: "journey",
       coordinates: "48.8,2.3",
@@ -200,6 +201,9 @@ export class Wagon {
     return {
       id: journeyId,
       stops,
+      nextStops: [...stops].slice(
+        stops.findIndex((stop: any) => stop.id === userStopAreaId)
+      ),
       line,
       closedStops: new Set(
         json.data.stops

@@ -29,7 +29,7 @@ function updateJourneyStopsPagesCount() {
 }
 
 function goToNextPage() {
-  if (!stopsPagesCount.value) {
+  if (!stopsPagesCount.value || stopsPagesCount.value <= 2) {
     return;
   }
   currentPage.value++;
