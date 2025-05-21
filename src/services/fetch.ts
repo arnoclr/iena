@@ -1,4 +1,9 @@
-import { Wagon, type SimpleJourney, type SimpleStop } from "./Wagon";
+import {
+  Wagon,
+  type SimpleDeparture,
+  type SimpleJourney,
+  type SimpleStop,
+} from "./Wagon";
 
 function getUniqueJourneyKey(stops: SimpleStop[]): string {
   return stops
@@ -21,9 +26,12 @@ export async function getNextJourneys(
   lineIds: string[],
   platforms?: string[]
 ): Promise<SimpleJourney[]> {
-  // TODO: faire plusieurs fetchs pour chacune des lignes
-  const departures = await Wagon.departures(lineIds[0], [stopArea]);
+  const departures: SimpleDeparture[] = [];
   const journeys: SimpleJourney[] = [];
+
+  for (const line of lineIds) {
+    departures.push(...(await Wagon.departures(line, [stopArea])));
+  }
 
   const journeysPattern = new Map<
     string,
@@ -32,6 +40,7 @@ export async function getNextJourneys(
   const journeysPerDestination = new Map<string, Set<string>>();
 
   for (const departure of departures
+    .sort((a, b) => a.leavesAt.diff(b.leavesAt))
     .filter((x) => platforms?.includes(x.platform || "") || !platforms)
     .slice(0, 5)) {
     const journey = await Wagon.journey(
