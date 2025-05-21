@@ -51,10 +51,7 @@ export async function getNextJourneys(
   }
 
   for (const journey of journeys) {
-    if (
-      journey.userStopDeparture.platform === undefined &&
-      journeys.at(-1)?.userStopDeparture.platform !== undefined
-    ) {
+    if (journey.userStopDeparture.platform === "unknown") {
       journey.metadata.flag = "OUTSIDE_PLATFORM";
     }
     // fill the via metadata
