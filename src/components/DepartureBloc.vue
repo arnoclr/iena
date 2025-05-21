@@ -51,8 +51,8 @@ const departure = computed(() => props.journey?.userStopDeparture);
           :stops="journey.nextStops.map((x) => x.name)"
         ></HorizontalStopsList>
       </div>
-      <div class="platform" v-if="departure.platform">
-        <span>{{ departure.platform }}</span>
+      <div class="platform">
+        <span>{{ departure.platform ?? "--" }}</span>
       </div>
     </div>
   </article>

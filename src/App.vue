@@ -35,7 +35,7 @@ onMounted(() => {
 
 <template>
   <ul>
-    <li v-for="(journey, i) in journeys">
+    <li v-for="(journey, i) in journeys" :key="journey.id">
       <DepartureBloc
         :show-labels="i === 0"
         :show-stops="i < 2"
