@@ -48,10 +48,9 @@ export type SimpleJourney = {
   nextStops: SimpleStop[];
   closedStops: Set<string>;
   skippedStops: Set<string>;
-  metadata?: {
+  metadata: {
     via?: string;
-    isReplacementBus?: boolean;
-    isPlatformOutside?: boolean;
+    flag?: "REPLACEMENT_BUS" | "OUTSIDE_PLATFORM";
   };
 };
 
@@ -220,6 +219,7 @@ export class Wagon {
           .filter((x: any) => x.isSkipped)
           .map((x: any) => x.stop.id)
       ),
+      metadata: {},
     };
   }
 }

@@ -4,21 +4,45 @@ import { localized } from "../language";
 import type { SimpleJourney, SimpleLine } from "../services/Wagon";
 import HorizontalStopsList from "./HorizontalStopsList.vue";
 import LineDirection from "./LineDirection.vue";
+import Label from "./Label.vue";
 
 const props = defineProps<{
   line: SimpleLine;
   journey: SimpleJourney;
-  showLabels: boolean;
   showStops: boolean;
+  showShortTrain?: boolean;
 }>();
 
 const departure = computed(() => props.journey?.userStopDeparture);
+
+const labelSeverity = computed(() => {
+  switch (props.journey.metadata.flag) {
+    case "OUTSIDE_PLATFORM":
+      return "HIGH";
+    case "REPLACEMENT_BUS":
+      return "MEDIUM";
+    default:
+      return "LOW";
+  }
+});
 </script>
 
 <template>
   <article>
-    <div class="labels" v-if="showLabels">
-      <span v-if="departure.vehicleLength === 'SHORT'">
+    <div class="labels" v-if="journey.metadata.flag || showShortTrain">
+      <Label :severity="labelSeverity" v-if="journey.metadata.flag">
+        <span v-if="journey.metadata.flag === 'OUTSIDE_PLATFORM'">
+          {{
+            // TODO: add translation
+            localized({
+              fr: "Voies Grandes Lignes",
+              en: "Voies Grandes Lignes",
+              es: "Voies Grandes Lignes",
+            })
+          }}
+        </span>
+      </Label>
+      <Label severity="LOW" v-if="departure.vehicleLength === 'SHORT'">
         {{
           localized({
             fr: "Train court",
@@ -26,16 +50,7 @@ const departure = computed(() => props.journey?.userStopDeparture);
             es: "Traino corto",
           })
         }}
-      </span>
-      <span v-if="departure.vehicleLength === 'LONG'">
-        {{
-          localized({
-            fr: "Train long",
-            en: "Long train",
-            es: "Traino longo",
-          })
-        }}
-      </span>
+      </Label>
     </div>
     <div class="row" :class="{ 'no-stops': !showStops }">
       <div class="bloc">
@@ -67,15 +82,9 @@ article {
 }
 
 .labels {
-  background-color: #166d71;
-  border-radius: var(--border-radius) var(--border-radius) 0 0;
   display: flex;
-  color: white;
-  width: fit-content;
   align-self: end;
   margin-right: var(--platform-width);
-  padding: 1vh 2vh;
-  font-size: 3vh;
 }
 
 .row {

@@ -51,13 +51,19 @@ export async function getNextJourneys(
   }
 
   for (const journey of journeys) {
+    if (
+      journey.userStopDeparture.platform === undefined &&
+      journeys.at(-1)?.userStopDeparture.platform !== undefined
+    ) {
+      journey.metadata.flag = "OUTSIDE_PLATFORM";
+    }
+    // fill the via metadata
     const patterns = journeysPerDestination.get(
       journey.userStopDeparture.destination.name
     );
     if (patterns?.size === 1) {
       continue;
     }
-    // fill the via metadata
     const stopsOfOtherJourneys = new Set<string>();
     for (const pattern of patterns ?? []) {
       if (pattern === getUniqueJourneyKey(journey.nextStops)) {
@@ -70,12 +76,10 @@ export async function getNextJourneys(
         }
       }
     }
-    journey.metadata = {
-      via: getFirstUniqueElement(
-        new Set(journey.nextStops.map((stop) => stop.name)),
-        stopsOfOtherJourneys
-      ),
-    };
+    journey.metadata.via = getFirstUniqueElement(
+      new Set(journey.nextStops.map((stop) => stop.name)),
+      stopsOfOtherJourneys
+    );
   }
 
   return journeys;
