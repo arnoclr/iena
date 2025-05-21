@@ -42,7 +42,7 @@ export async function getNextJourneys(
       ...journey,
     });
     // count the number of journeys per destination
-    const journeyPattern = getUniqueJourneyKey(journey.stops);
+    const journeyPattern = getUniqueJourneyKey(journey.nextStops);
     if (!journeysPerDestination.has(departure.destination.name)) {
       journeysPerDestination.set(departure.destination.name, new Set());
     }
@@ -60,19 +60,19 @@ export async function getNextJourneys(
     // fill the via metadata
     const stopsOfOtherJourneys = new Set<string>();
     for (const pattern of patterns ?? []) {
-      if (pattern === getUniqueJourneyKey(journey.stops)) {
+      if (pattern === getUniqueJourneyKey(journey.nextStops)) {
         continue;
       }
       const otherJourney = journeysPattern.get(pattern);
       if (otherJourney) {
-        for (const stop of otherJourney.stops) {
+        for (const stop of otherJourney.nextStops) {
           stopsOfOtherJourneys.add(stop.name);
         }
       }
     }
     journey.metadata = {
       via: getFirstUniqueElement(
-        new Set(journey.stops.map((stop) => stop.name)),
+        new Set(journey.nextStops.map((stop) => stop.name)),
         stopsOfOtherJourneys
       ),
     };
