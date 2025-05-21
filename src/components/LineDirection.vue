@@ -57,7 +57,7 @@ defineProps<{
 }
 
 span {
-  color: white;
+  color: var(--text);
   margin: 0;
   display: block;
 }
@@ -72,7 +72,7 @@ span.journeyCode {
 }
 
 span.via {
-  color: #ccc;
+  color: var(--text-light);
   font-size: 4.5vh;
 }
 

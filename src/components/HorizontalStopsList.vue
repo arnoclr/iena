@@ -103,7 +103,7 @@ onUnmounted(() => {
 <style scoped>
 .journey {
   display: block;
-  color: #ccc;
+  color: var(--text-light);
   font-size: 6vh;
 }
 
@@ -123,7 +123,7 @@ onUnmounted(() => {
 }
 
 .stop.closed .name {
-  color: red;
+  color: var(--high-congestion);
 }
 
 .chevron {
@@ -135,7 +135,7 @@ onUnmounted(() => {
 .xmark {
   height: 6vh;
   width: auto;
-  color: red;
+  color: var(--high-congestion);
   vertical-align: text-bottom;
 }
 

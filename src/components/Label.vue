@@ -21,10 +21,10 @@ defineProps<{
 }
 
 .labelRoot.low {
-  background-color: #166d71;
+  background-color: var(--equipment-background);
 }
 
 .labelRoot.high {
-  background-color: red;
+  background-color: var(--alert-background);
 }
 </style>

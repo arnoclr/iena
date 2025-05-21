@@ -120,7 +120,7 @@ article {
   display: flex;
   flex-direction: column;
   gap: 2vh;
-  background-color: #171a3c;
+  background-color: var(--background);
   border-radius: var(--border-radius);
   padding: 2vh;
 }
@@ -129,15 +129,15 @@ article {
   display: grid;
   place-items: center;
   background-color: white;
-  color: #171a3c;
-  border: calc(var(--border-radius) / 2) solid #171a3c;
+  color: var(--background);
+  border: calc(var(--border-radius) / 2) solid var(--background);
   height: var(--platform-width);
   width: var(--platform-width);
   font-weight: bold;
   font-size: 6vh;
   border-radius: 0 1vh 1vh 0;
   border-left: none;
-  box-shadow: calc(-1 * var(--border-radius)) 0 0 0 #171a3c;
+  box-shadow: calc(-1 * var(--border-radius)) 0 0 0 var(--background);
   box-sizing: border-box;
 }
 </style>
