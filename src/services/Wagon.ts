@@ -48,6 +48,11 @@ export type SimpleJourney = {
   nextStops: SimpleStop[];
   closedStops: Set<string>;
   skippedStops: Set<string>;
+  metadata?: {
+    via?: string;
+    isReplacementBus?: boolean;
+    isPlatformOutside?: boolean;
+  };
 };
 
 function processSVG(svg: string): string {

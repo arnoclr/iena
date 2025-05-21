@@ -1,5 +1,20 @@
-import { SIMPLE_LINE } from "../mock";
-import { Wagon, type SimpleJourney } from "./Wagon";
+import { Wagon, type SimpleJourney, type SimpleStop } from "./Wagon";
+
+function getUniqueJourneyKey(stops: SimpleStop[]): string {
+  return stops
+    .map((stop) => stop.id)
+    .sort()
+    .join("-");
+}
+
+function getFirstUniqueElement<T>(of: Set<T>, notIn: Set<T>): T | undefined {
+  for (const element of of) {
+    if (!notIn.has(element)) {
+      return element;
+    }
+  }
+  return undefined;
+}
 
 export async function getNextJourneys(
   stopArea: string,
@@ -9,7 +24,13 @@ export async function getNextJourneys(
   const departures = await Wagon.departures(lineIds[0], [stopArea]);
   const journeys: SimpleJourney[] = [];
 
-  for (const departure of departures.slice(0, 2)) {
+  const journeysPattern = new Map<
+    string,
+    Omit<SimpleJourney, "userStopDeparture">
+  >();
+  const journeysPerDestination = new Map<string, Set<string>>();
+
+  for (const departure of departures.slice(0, 5)) {
     const journey = await Wagon.journey(
       departure.id,
       departure.vehicleNumber,
@@ -20,18 +41,41 @@ export async function getNextJourneys(
       userStopDeparture: departure,
       ...journey,
     });
+    // count the number of journeys per destination
+    const journeyPattern = getUniqueJourneyKey(journey.stops);
+    if (!journeysPerDestination.has(departure.destination.name)) {
+      journeysPerDestination.set(departure.destination.name, new Set());
+    }
+    journeysPerDestination.get(departure.destination.name)?.add(journeyPattern);
+    journeysPattern.set(journeyPattern, journey);
   }
 
-  for (const departure of departures.slice(2, 5)) {
-    journeys.push({
-      userStopDeparture: departure,
-      id: departure.id,
-      line: journeys.at(0)?.line ?? SIMPLE_LINE,
-      closedStops: new Set<string>(),
-      skippedStops: new Set<string>(),
-      stops: [],
-      nextStops: [],
-    });
+  for (const journey of journeys) {
+    const patterns = journeysPerDestination.get(
+      journey.userStopDeparture.destination.name
+    );
+    if (patterns?.size === 1) {
+      continue;
+    }
+    // fill the via metadata
+    const stopsOfOtherJourneys = new Set<string>();
+    for (const pattern of patterns ?? []) {
+      if (pattern === getUniqueJourneyKey(journey.stops)) {
+        continue;
+      }
+      const otherJourney = journeysPattern.get(pattern);
+      if (otherJourney) {
+        for (const stop of otherJourney.stops) {
+          stopsOfOtherJourneys.add(stop.name);
+        }
+      }
+    }
+    journey.metadata = {
+      via: getFirstUniqueElement(
+        new Set(journey.stops.map((stop) => stop.name)),
+        stopsOfOtherJourneys
+      ),
+    };
   }
 
   return journeys;

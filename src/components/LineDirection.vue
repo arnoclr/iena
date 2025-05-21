@@ -7,6 +7,7 @@ defineProps<{
   direction: string;
   journeyCode?: string;
   leavesAt?: Dayjs;
+  via?: string;
 }>();
 </script>
 
@@ -16,9 +17,10 @@ defineProps<{
     <div class="texts">
       <span class="journeyCode" v-if="journeyCode">{{ journeyCode }}</span>
       <span class="direction">{{ direction }}</span>
+      <span class="via" v-if="via">via {{ via }}</span>
     </div>
     <span class="time">
-      <Time :time="leavesAt"></Time>
+      <Time v-if="leavesAt" :time="leavesAt"></Time>
     </span>
   </div>
 </template>
@@ -67,6 +69,11 @@ span.direction {
 
 span.journeyCode {
   font-size: 4.7vh;
+}
+
+span.via {
+  color: #ccc;
+  font-size: 4.5vh;
 }
 
 span.time {

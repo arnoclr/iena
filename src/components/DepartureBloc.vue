@@ -9,13 +9,8 @@ const props = defineProps<{
   line: SimpleLine;
   journey: SimpleJourney;
   showLabels: boolean;
+  showStops: boolean;
 }>();
-
-const rowClasses = computed(() => {
-  return {
-    "no-stops": props.journey.stops.length === 0,
-  };
-});
 
 const departure = computed(() => props.journey?.userStopDeparture);
 </script>
@@ -42,16 +37,17 @@ const departure = computed(() => props.journey?.userStopDeparture);
         }}
       </span>
     </div>
-    <div class="row" :class="rowClasses">
+    <div class="row" :class="{ 'no-stops': !showStops }">
       <div class="bloc">
         <LineDirection
           :number-shape-svg="line.numberShapeSvg"
           :direction="departure.destination.name"
           :journey-code="departure.journeyCode"
           :leaves-at="departure.leavesAt"
+          :via="journey.metadata?.via"
         ></LineDirection>
         <HorizontalStopsList
-          v-if="journey.stops.length > 0"
+          v-if="showStops"
           :stops="journey.nextStops.map((x) => x.name)"
         ></HorizontalStopsList>
       </div>
