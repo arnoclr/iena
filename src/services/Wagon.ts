@@ -50,7 +50,7 @@ export type SimpleJourney = {
   skippedStops: Set<string>;
   metadata: {
     via?: string;
-    flag?: "REPLACEMENT_BUS" | "OUTSIDE_PLATFORM";
+    flag?: "REPLACEMENT_BUS" | "OUTSIDE_PLATFORM" | "MODIFIED_JOURNEY";
   };
 };
 

@@ -18,6 +18,7 @@ const departure = computed(() => props.journey?.userStopDeparture);
 const labelSeverity = computed(() => {
   switch (props.journey.metadata.flag) {
     case "OUTSIDE_PLATFORM":
+    case "MODIFIED_JOURNEY":
       return "HIGH";
     case "REPLACEMENT_BUS":
       return "MEDIUM";
@@ -38,6 +39,16 @@ const labelSeverity = computed(() => {
               fr: "Voies Grandes Lignes",
               en: "Voies Grandes Lignes",
               es: "Voies Grandes Lignes",
+            })
+          }}
+        </span>
+        <span v-if="journey.metadata.flag === 'MODIFIED_JOURNEY'">
+          {{
+            // TODO: add translation
+            localized({
+              fr: "Desserte modifiée",
+              en: "Attention, stops changed",
+              es: "Desserte modifiée",
             })
           }}
         </span>
@@ -63,7 +74,8 @@ const labelSeverity = computed(() => {
         ></LineDirection>
         <HorizontalStopsList
           v-if="showStops"
-          :stops="journey.nextStops.map((x) => x.name)"
+          :stops="journey.nextStops"
+          :closed-stops="journey.closedStops"
         ></HorizontalStopsList>
       </div>
       <div class="platform">

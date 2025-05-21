@@ -1,8 +1,10 @@
 <script lang="ts" setup>
 import { onMounted, onUnmounted, ref, watch } from "vue";
+import type { SimpleStop } from "../services/Wagon";
 
 const props = defineProps<{
-  stops: string[];
+  stops: SimpleStop[];
+  closedStops: Set<string>;
 }>();
 
 const LINE_HEIGHT_VH = 8;
@@ -64,15 +66,36 @@ onUnmounted(() => {
   <div class="journey">
     <span
       ref="stopsSpan"
+      class="group"
       :class="{ transition: isTransitionEnabled }"
       :style="{
         transform: `translateY(-${currentPage * stopsPageHeight}px)`,
         lineHeight: `${LINE_HEIGHT_VH}vh`,
       }"
     >
-      {{ stops.join(" > ") }}
-      <br />
-      {{ stops.join(" > ") }}
+      <template v-for="_ in 2">
+        <span
+          v-for="(stop, i) in stops"
+          class="stop"
+          :class="{ closed: closedStops.has(stop.id) }"
+        >
+          <span v-if="i !== 0" class="chevron">&nbsp;&gt;&nbsp;</span>
+          <svg
+            class="xmark"
+            xmlns="http://www.w3.org/2000/svg"
+            height="24px"
+            viewBox="0 -960 960 960"
+            width="24px"
+            fill="currentColor"
+          >
+            <path
+              d="M480-395 301.5-216.5q-18 18-42.5 17.75T216.5-217q-17.5-18-17.25-42.25T217-301l178-179-178-179q-17.5-17.5-17.5-41.75T217-743q17.5-18 42-18.25t42.5 17.75L480-565l178.5-178.5q18-18 42.5-17.75T743.5-743q17.5 18 17.25 42.25T743-659L565-480l178 179q17.5 17.5 17.5 41.75T743-217q-17.5 18-42 18.25t-42.5-17.75L480-395Z"
+            />
+          </svg>
+          <span class="name">{{ stop.name }}</span>
+        </span>
+        <br />
+      </template>
     </span>
   </div>
 </template>
@@ -89,13 +112,34 @@ onUnmounted(() => {
   overflow: hidden;
 }
 
-.journey span {
+.journey .group {
   margin-top: -1.1vh;
   display: inline-block;
   height: 6.6vh;
 }
 
-.journey span.transition {
+.journey .group.transition {
   transition: transform 1s steps(9);
+}
+
+.stop.closed .name {
+  color: red;
+}
+
+.chevron {
+  display: inline-block;
+  transform-origin: center;
+  transform: scaleX(0.6);
+}
+
+.xmark {
+  height: 6vh;
+  width: auto;
+  color: red;
+  vertical-align: text-bottom;
+}
+
+.stop:not(.closed) .xmark {
+  display: none;
 }
 </style>

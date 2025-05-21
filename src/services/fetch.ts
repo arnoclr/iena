@@ -57,6 +57,9 @@ export async function getNextJourneys(
     if (journey.userStopDeparture.platform === "unknown") {
       journey.metadata.flag = "OUTSIDE_PLATFORM";
     }
+    if (journey.closedStops.size > 0) {
+      journey.metadata.flag = "MODIFIED_JOURNEY";
+    }
     // fill the via metadata
     const patterns = journeysPerDestination.get(
       journey.userStopDeparture.destination.name
