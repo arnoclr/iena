@@ -18,7 +18,8 @@ function getFirstUniqueElement<T>(of: Set<T>, notIn: Set<T>): T | undefined {
 
 export async function getNextJourneys(
   stopArea: string,
-  lineIds: string[]
+  lineIds: string[],
+  platforms?: string[]
 ): Promise<SimpleJourney[]> {
   // TODO: faire plusieurs fetchs pour chacune des lignes
   const departures = await Wagon.departures(lineIds[0], [stopArea]);
@@ -30,7 +31,9 @@ export async function getNextJourneys(
   >();
   const journeysPerDestination = new Map<string, Set<string>>();
 
-  for (const departure of departures.slice(0, 5)) {
+  for (const departure of departures
+    .filter((x) => platforms?.includes(x.platform || "") || !platforms)
+    .slice(0, 5)) {
     const journey = await Wagon.journey(
       departure.id,
       departure.vehicleNumber,

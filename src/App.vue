@@ -11,14 +11,14 @@ const journeys = ref<SimpleJourney[]>([]);
 const params = ref<ReturnType<typeof getParamsFromUrl>>();
 
 async function updateJourneys() {
-  const { lines, stop } = params.value || {};
+  const { lines, stop, platforms } = params.value || {};
 
   if (!lines || !stop) {
     return;
   }
 
   // ?stop=stop_area%3AIDFM%3A73163&lines=line%3AIDFM%3AC01742
-  journeys.value = await getNextJourneys(stop, lines);
+  journeys.value = await getNextJourneys(stop, lines, platforms);
 }
 
 setInterval(() => {
