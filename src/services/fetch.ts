@@ -22,6 +22,7 @@ function getFirstUniqueElement<T>(of: Set<T>, notIn: Set<T>): T | undefined {
 }
 
 export async function getNextJourneys(
+  coordinates: string,
   stopArea: string,
   lineIds: string[],
   platforms?: string[]
@@ -30,7 +31,7 @@ export async function getNextJourneys(
   const journeys: SimpleJourney[] = [];
 
   for (const line of lineIds) {
-    departures.push(...(await Wagon.departures(line, [stopArea])));
+    departures.push(...(await Wagon.departures(coordinates, line, [stopArea])));
   }
 
   const journeysPattern = new Map<
@@ -44,6 +45,7 @@ export async function getNextJourneys(
     .filter((x) => platforms?.includes(x.platform || "") || !platforms)
     .slice(0, 5)) {
     const journey = await Wagon.journey(
+      coordinates,
       departure.id,
       departure.vehicleNumber,
       departure.journeyCode,

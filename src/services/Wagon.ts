@@ -112,23 +112,21 @@ export class Wagon {
   }
 
   public static async departures(
+    coordinates: string,
     lineId: string,
     stopIds: string[],
     /** @deprecated */
     isTerminus: boolean = false
   ): Promise<SimpleDeparture[]> {
-    let params = new URLSearchParams();
-
-    params.append("action", "departures");
-    params.append("coordinates", "48.8,2.3");
-    params.append("line", lineId);
-    params.append(
-      "stops",
-      "[" + stopIds.map((id) => `"${id}"`).join(",") + "]"
-    );
-    params.append("isTerminus", isTerminus ? "1" : "0");
-    params.append("compatibilityDate", "2025-01-21");
-    params.append("apiKey", this.apiKey);
+    let params = new URLSearchParams({
+      action: "departures",
+      coordinates,
+      compatibilityDate: "2025-01-21",
+      apiKey: this.apiKey,
+      line: lineId,
+      stops: `[${stopIds.map((id) => `"${id}"`).join(",")}]`,
+      isTerminus: isTerminus ? "1" : "0",
+    });
 
     const response = await fetch(`${this.baseUrl}?${params.toString()}`);
 
@@ -151,13 +149,13 @@ export class Wagon {
             id: departure.source.id,
           },
           leavesAt: dayjs(
-            departure.departure.realTime ||
-              departure.departure.theoretical ||
+            departure.departure?.realTime ||
+              departure.departure?.theoretical ||
               "invalid"
           ),
           arrivesAt: dayjs(
-            departure.arrival.realTime ||
-              departure.arrival.theoretical ||
+            departure.arrival?.realTime ||
+              departure.arrival?.theoretical ||
               "invalid"
           ),
           id: departure.journeyId,
@@ -175,6 +173,7 @@ export class Wagon {
   }
 
   public static async journey(
+    coordinates: string,
     journeyId: string,
     vehicleNumber?: string,
     journeyCode?: string,
@@ -182,7 +181,7 @@ export class Wagon {
   ): Promise<Omit<SimpleJourney, "userStopDeparture">> {
     let params = new URLSearchParams({
       action: "journey",
-      coordinates: "48.8,2.3",
+      coordinates,
       compatibilityDate: "2025-01-21",
       apiKey: this.apiKey,
       journeyId,
