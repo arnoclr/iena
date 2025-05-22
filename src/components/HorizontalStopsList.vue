@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { onMounted, onUnmounted, ref, watch } from "vue";
 import type { SimpleStop } from "../services/Wagon";
+import { Strings } from "../Helpers";
 
 const props = defineProps<{
   stops: SimpleStop[];
@@ -96,7 +97,7 @@ onUnmounted(() => {
               d="M480-395 301.5-216.5q-18 18-42.5 17.75T216.5-217q-17.5-18-17.25-42.25T217-301l178-179-178-179q-17.5-17.5-17.5-41.75T217-743q17.5-18 42-18.25t42.5 17.75L480-565l178.5-178.5q18-18 42.5-17.75T743.5-743q17.5 18 17.25 42.25T743-659L565-480l178 179q17.5 17.5 17.5 41.75T743-217q-17.5 18-42 18.25t-42.5-17.75L480-395Z"
             />
           </svg>
-          <span class="name">{{ stop.name }}</span>
+          <span class="name">{{ Strings.abbreviate(stop.name) }}</span>
         </span>
         <br />
       </template>

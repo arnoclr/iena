@@ -2,6 +2,7 @@
 import type { Dayjs } from "dayjs";
 import Time from "./Time.vue";
 import type { SimpleLine } from "../services/Wagon";
+import { Strings } from "../Helpers";
 
 defineProps<{
   line: SimpleLine;
@@ -28,8 +29,8 @@ defineProps<{
       <span class="vehicleNumber" v-else-if="vehicleNumber">
         n° {{ vehicleNumber }}
       </span>
-      <span class="direction">{{ direction }}</span>
-      <span class="via" v-if="via">via {{ via }}</span>
+      <span class="direction">{{ Strings.abbreviate(direction) }}</span>
+      <span class="via" v-if="via">via {{ Strings.abbreviate(via) }}</span>
     </div>
     <span class="time">
       <Time v-if="leavesAt" :time="leavesAt"></Time>
