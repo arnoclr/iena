@@ -91,9 +91,10 @@ const labelSeverity = computed(() => {
           :vehicle-number="departure.vehicleNumber"
           :leaves-at="departure.leavesAt"
           :via="journey.metadata?.via"
+          :direct="journey.metadata.direct"
         ></LineDirection>
         <HorizontalStopsList
-          v-if="showStops"
+          v-if="showStops && !journey.metadata.direct"
           :stops="journey.nextStops"
           :closed-stops="journey.closedStops"
         ></HorizontalStopsList>

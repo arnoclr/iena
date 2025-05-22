@@ -11,6 +11,7 @@ defineProps<{
   vehicleNumber?: string;
   leavesAt?: Dayjs;
   via?: string;
+  direct?: boolean;
 }>();
 </script>
 
@@ -31,6 +32,7 @@ defineProps<{
       </span>
       <span class="direction">{{ Strings.abbreviate(direction) }}</span>
       <span class="via" v-if="via">via {{ Strings.abbreviate(via) }}</span>
+      <span class="direct" v-if="direct">&gt;&gt; Direct</span>
     </div>
     <span class="time">
       <Time v-if="leavesAt" :time="leavesAt"></Time>
@@ -100,9 +102,14 @@ span.vehicleNumber {
   transform: translateY(-1.5vh);
 }
 
-span.via {
+span.via,
+span.direct {
   color: var(--text-light);
   font-size: 4.5vh;
+}
+
+span.direct {
+  font-style: italic;
 }
 
 span.time {

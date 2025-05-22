@@ -51,6 +51,7 @@ export type SimpleJourney = {
   skippedStops: Set<string>;
   metadata: {
     via?: string;
+    direct?: boolean;
     flag?: "REPLACEMENT_BUS" | "OUTSIDE_PLATFORM" | "MODIFIED_JOURNEY";
   };
 };
@@ -203,24 +204,22 @@ export class Wagon {
     });
 
     const line = this.lineFromDTO(json.data.line);
+    const skippedStops = new Set<string>(
+      json.data.stops.filter((x: any) => x.isSkipped).map((x: any) => x.stop.id)
+    );
+    const closedStops = new Set<string>(
+      json.data.stops.filter((x: any) => x.isClosed).map((x: any) => x.stop.id)
+    );
 
     return {
       id: journeyId,
       stops,
-      nextStops: [...stops].slice(
-        stops.findIndex((stop: any) => stop.id === userStopAreaId)
-      ),
+      nextStops: [...stops]
+        .slice(stops.findIndex((stop: any) => stop.id === userStopAreaId))
+        .filter((x) => skippedStops.has(x.id) === false),
       line,
-      closedStops: new Set(
-        json.data.stops
-          .filter((x: any) => x.isClosed)
-          .map((x: any) => x.stop.id)
-      ),
-      skippedStops: new Set(
-        json.data.stops
-          .filter((x: any) => x.isSkipped)
-          .map((x: any) => x.stop.id)
-      ),
+      closedStops,
+      skippedStops,
       metadata: {},
     };
   }

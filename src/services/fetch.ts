@@ -65,6 +65,7 @@ export async function getNextJourneys(
   const hasNonBusLines = journeys.some((journey) => !journey.line.isOnRoad);
 
   for (const journey of journeys) {
+    journey.metadata.direct = journey.nextStops.length === 2;
     if (journey.userStopDeparture.platform === "unknown") {
       journey.metadata.flag = "OUTSIDE_PLATFORM";
     }
