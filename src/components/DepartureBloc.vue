@@ -85,9 +85,10 @@ const labelSeverity = computed(() => {
           v-if="journey.metadata.flag === 'REPLACEMENT_BUS'"
         ></div>
         <LineDirection
-          :number-shape-svg="line.numberShapeSvg"
+          :line="line"
           :direction="departure.destination.name"
           :journey-code="departure.journeyCode"
+          :vehicle-number="departure.vehicleNumber"
           :leaves-at="departure.leavesAt"
           :via="journey.metadata?.via"
         ></LineDirection>

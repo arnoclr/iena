@@ -20,13 +20,17 @@ function vhToPx(vh: number): number {
   return (window.innerHeight * vh) / 100;
 }
 
+function lowestEven(num: number): number {
+  return num % 2 === 0 ? num : num - 1;
+}
+
 function updateJourneyStopsPagesCount() {
   if (!stopsSpan.value) {
     return;
   }
   const cellHeight = vhToPx(LINE_HEIGHT_VH);
   const spanHeight = stopsSpan.value.scrollHeight;
-  stopsPagesCount.value = Math.ceil(spanHeight / cellHeight);
+  stopsPagesCount.value = lowestEven(Math.ceil(spanHeight / cellHeight));
   stopsPageHeight.value = spanHeight / stopsPagesCount.value;
 }
 

@@ -1,11 +1,13 @@
 <script lang="ts" setup>
 import type { Dayjs } from "dayjs";
 import Time from "./Time.vue";
+import type { SimpleLine } from "../services/Wagon";
 
 defineProps<{
-  numberShapeSvg?: string;
+  line: SimpleLine;
   direction: string;
   journeyCode?: string;
+  vehicleNumber?: string;
   leavesAt?: Dayjs;
   via?: string;
 }>();
@@ -13,9 +15,19 @@ defineProps<{
 
 <template>
   <div class="lineDirectionRoot">
-    <div class="shape" v-html="numberShapeSvg"></div>
+    <div
+      v-if="line.numberShapeSvg"
+      class="shape"
+      v-html="line.numberShapeSvg"
+    ></div>
+    <span v-else class="lineNumber">{{ line.number }}</span>
     <div class="texts">
-      <span class="journeyCode">{{ journeyCode?.slice(0, 4) ?? "" }}</span>
+      <span class="journeyCode" v-if="journeyCode">
+        {{ journeyCode.slice(0, 4) ?? "" }}
+      </span>
+      <span class="vehicleNumber" v-else-if="vehicleNumber">
+        n° {{ vehicleNumber }}
+      </span>
       <span class="direction">{{ direction }}</span>
       <span class="via" v-if="via">via {{ via }}</span>
     </div>
@@ -35,6 +47,11 @@ defineProps<{
     calc(var(--lineDirectionWidth) * 3);
   gap: 2.72vh;
   align-items: center;
+}
+
+.lineNumber {
+  white-space: nowrap;
+  font-size: 5vh;
 }
 
 .texts {
@@ -67,9 +84,19 @@ span.direction {
   font-size: 7.2vh;
 }
 
+span.journeyCode,
+span.vehicleNumber {
+  min-width: 11vh;
+}
+
 span.journeyCode {
   font-size: 4.7vh;
-  width: 5ch;
+  font-family: monospace;
+}
+
+span.vehicleNumber {
+  font-size: 2vh;
+  transform: translateY(-1.5vh);
 }
 
 span.via {
