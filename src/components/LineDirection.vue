@@ -55,6 +55,7 @@ defineProps<{
 .lineNumber {
   white-space: nowrap;
   font-size: 5vh;
+  font-weight: bold;
 }
 
 .texts {
