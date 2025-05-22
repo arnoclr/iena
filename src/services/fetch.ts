@@ -62,6 +62,8 @@ export async function getNextJourneys(
     journeysPattern.set(journeyPattern, journey);
   }
 
+  const hasNonBusLines = journeys.some((journey) => !journey.line.isOnRoad);
+
   for (const journey of journeys) {
     if (journey.userStopDeparture.platform === "unknown") {
       journey.metadata.flag = "OUTSIDE_PLATFORM";
@@ -69,7 +71,7 @@ export async function getNextJourneys(
     if (journey.closedStops.size > 0) {
       journey.metadata.flag = "MODIFIED_JOURNEY";
     }
-    if (journey.line.isOnRoad) {
+    if (journey.line.isOnRoad && hasNonBusLines) {
       journey.metadata.flag = "REPLACEMENT_BUS";
     }
     // fill the via metadata
