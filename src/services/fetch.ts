@@ -34,6 +34,7 @@ export async function getNextJourneys(
     departures.push(...(await Wagon.departures(coordinates, line, [stopArea])));
   }
 
+<<<<<<< HEAD
   const journeysPattern = new Map<string, Omit<SimpleJourney, "userStopDeparture">>();
   const journeysPerDestination = new Map<string, Set<string>>();
 
@@ -57,6 +58,18 @@ export async function getNextJourneys(
   })));
 
   for (const departure of filteredDepartures) {
+=======
+  const journeysPattern = new Map<
+    string,
+    Omit<SimpleJourney, "userStopDeparture">
+  >();
+  const journeysPerDestination = new Map<string, Set<string>>();
+
+  for (const departure of departures
+    .sort((a, b) => a.leavesAt.diff(b.leavesAt))
+    .filter((x) => platforms?.includes(x.platform || "") || !platforms)
+    .slice(0, 5)) {
+>>>>>>> c16ee51e93e45e4a28e8f9009e02cf372149ae5d
     const journey = await Wagon.journey(
       coordinates,
       departure.id,
