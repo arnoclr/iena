@@ -34,16 +34,29 @@ export async function getNextJourneys(
     departures.push(...(await Wagon.departures(coordinates, line, [stopArea])));
   }
 
-  const journeysPattern = new Map<
-    string,
-    Omit<SimpleJourney, "userStopDeparture">
-  >();
+  const journeysPattern = new Map<string, Omit<SimpleJourney, "userStopDeparture">>();
   const journeysPerDestination = new Map<string, Set<string>>();
 
-  for (const departure of departures
+  // Corrigez le filtre des plateformes
+  const filteredDepartures = departures
     .sort((a, b) => a.leavesAt.diff(b.leavesAt))
-    .filter((x) => platforms?.includes(x.platform || "") || !platforms)
-    .slice(0, 5)) {
+    .filter((x) => {
+      // Si pas de filtre de plateforme ou filtre vide, on prend tout
+      if (!platforms || platforms.length === 0 || (platforms.length === 1 && platforms[0] === "")) {
+        return true;
+      }
+      // Sinon on filtre par plateforme
+      return platforms.includes(x.platform || "");
+    })
+    .slice(0, 5);
+
+  console.log("Departures after platform filter:", filteredDepartures.map(d => ({
+    dest: d.destination.name,
+    time: d.leavesAt.format('HH:mm'),
+    platform: d.platform
+  })));
+
+  for (const departure of filteredDepartures) {
     const journey = await Wagon.journey(
       coordinates,
       departure.id,

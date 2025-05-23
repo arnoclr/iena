@@ -129,8 +129,8 @@ const labelSeverity = computed(() => {
         </svg>
       </div>
       <div class="platform" v-else>
-        <span>{{ departure.platform ?? "--" }}</span>
-      </div>
+  <span>{{ departure.platform === "unknown" ? "--" : (departure.platform ?? "--") }}</span>
+</div>
     </div>
   </article>
 </template>

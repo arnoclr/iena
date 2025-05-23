@@ -115,9 +115,8 @@ export class Wagon {
     coordinates: string,
     lineId: string,
     stopIds: string[],
-    /** @deprecated */
     isTerminus: boolean = false
-  ): Promise<SimpleDeparture[]> {
+): Promise<SimpleDeparture[]> {
     let params = new URLSearchParams({
       action: "departures",
       coordinates,
@@ -136,9 +135,11 @@ export class Wagon {
 
     const json = await response.json();
 
-    return json.data.departures
+    console.log("Raw departures from API:", json.data.departures);
+
+    const departures = json.data.departures
       .map((departure: any) => {
-        return {
+        const dep = {
           destination: {
             name: departure.destinationLabel,
             averagePosition: this.positionFromDTO(
@@ -165,12 +166,26 @@ export class Wagon {
           platform: departure.platform,
           vehicleNumber: departure.vehicleNumber,
         };
+        console.log("Parsed departure:", {
+          destination: dep.destination.name,
+          leavesAt: dep.leavesAt.format('YYYY-MM-DD HH:mm'),
+          raw: departure.departure
+        });
+        return dep;
       })
       .filter(
-        (departure: SimpleDeparture) =>
-          departure.leavesAt.isValid() && departure.leavesAt.isAfter(dayjs())
+        (departure: SimpleDeparture) => {
+          const isValid = departure.leavesAt.isValid();
+          const isAfterNow = departure.leavesAt.isAfter(dayjs());
+          console.log(`Filter check for ${departure.leavesAt.format('HH:mm')}:`, 
+            { isValid, isAfterNow, now: dayjs().format('YYYY-MM-DD HH:mm') });
+          return isValid && isAfterNow;
+        }
       );
-  }
+    
+    console.log("Filtered departures:", departures.length);
+    return departures;
+}
 
   public static async journey(
     coordinates: string,
@@ -203,6 +218,10 @@ export class Wagon {
     });
 
     const line = this.lineFromDTO(json.data.line);
+    console.log("Line info:", line);
+    console.log("Stops info:", stops);
+    console.log("Journey ID:", journeyId);
+
     const skippedStops = new Set<string>(
       json.data.stops.filter((x: any) => x.isSkipped).map((x: any) => x.stop.id)
     );
