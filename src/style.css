@@ -1,0 +1,38 @@
+@font-face {
+  font-family: "Achemine";
+  src: url("/achemine_bold.ttf");
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: "Achemine";
+  src: url("/achemine_regular.ttf");
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: "Achemine";
+  src: url("/achemine_italic.ttf");
+  font-style: italic;
+}
+
+:root {
+  --equipment-background: #166d71;
+  --alert-background: #FA0101;
+  --worksite-background: #F45206;
+  --high-congestion: #E8565C;
+  --text: white;
+  --text-light: #CCC;
+  --background: #171a3c;
+}
+
+body {
+  background-color: var(--text-light);
+  font-family: Achemine, Verdana, Arial, sans-serif;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
