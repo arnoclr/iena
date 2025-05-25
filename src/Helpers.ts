@@ -7,7 +7,7 @@ export const Strings = {
       saint: "St",
       sainte: "St",
       porte: "Pte",
-      "-sur-": "-/s-",
+      "-sur-": "/",
       quartier: "Qr.",
       rue: "R.",
       avenue: "Av.",

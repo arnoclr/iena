@@ -21,6 +21,8 @@
   --alert-background: #FA0101;
   --worksite-background: #F45206;
   --high-congestion: #E8565C;
+  --medium-congestion: #DA7A2C;
+  --low-congestion: #58A470;
   --text: white;
   --text-light: #CCC;
   --background: #171a3c;

@@ -42,7 +42,7 @@ export async function getNextJourneys(
 
   for (const departure of departures
     .sort((a, b) => a.leavesAt.diff(b.leavesAt))
-    .filter((x) => platforms?.includes(x.platform || "") || !platforms)
+    // .filter((x) => platforms?.includes(x.platform || "") || !platforms)
     .slice(0, 5)) {
     const journey = await Wagon.journey(
       coordinates,

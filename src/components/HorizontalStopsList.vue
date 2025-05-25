@@ -80,11 +80,11 @@ onUnmounted(() => {
     >
       <template v-for="_ in 2">
         <span
-          v-for="(stop, i) in stops"
+          v-for="stop in stops.slice(1)"
           class="stop"
           :class="{ closed: closedStops.has(stop.id) }"
         >
-          <span v-if="i !== 0" class="chevron">&nbsp;&gt;&nbsp;</span>
+          <span class="chevron">&nbsp;&gt;&nbsp;</span>
           <svg
             class="xmark"
             xmlns="http://www.w3.org/2000/svg"

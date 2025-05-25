@@ -5,6 +5,7 @@ import type { SimpleJourney } from "./services/Wagon";
 import { getNextJourneys } from "./services/fetch";
 import { useLangStore } from "./stores/lang";
 import { getParamsFromUrl } from "./url";
+import Clock from "./components/Clock.vue";
 
 const langStore = useLangStore();
 const journeys = ref<SimpleJourney[]>([]);
@@ -42,6 +43,7 @@ onMounted(() => {
         :journey="journey"
       ></DepartureBloc>
     </li>
+    <Clock></Clock>
   </ul>
 </template>
 

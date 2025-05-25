@@ -5,6 +5,7 @@ import type { SimpleJourney, SimpleLine } from "../services/Wagon";
 import HorizontalStopsList from "./HorizontalStopsList.vue";
 import LineDirection from "./LineDirection.vue";
 import Label from "./Label.vue";
+import Congestion from "./Congestion.vue";
 
 const props = defineProps<{
   line: SimpleLine;
@@ -68,7 +69,7 @@ const labelSeverity = computed(() => {
           localized({
             fr: "Train court",
             en: "Short train",
-            es: "Traino corto",
+            es: "Tren corto",
           })
         }}
       </Label>
@@ -93,6 +94,10 @@ const labelSeverity = computed(() => {
           :via="journey.metadata?.via"
           :direct="journey.metadata.direct"
         ></LineDirection>
+        <Congestion
+          v-if="journey.congestion?.wagons"
+          :wagons="journey.congestion.wagons"
+        ></Congestion>
         <HorizontalStopsList
           v-if="showStops && !journey.metadata.direct"
           :stops="journey.nextStops"
