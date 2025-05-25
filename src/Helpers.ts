@@ -1,40 +1,53 @@
 export const Strings = {
   abbreviate: (str: string): string => {
+    let result = str;
+
+    // Remplacement des mots courants
     const map = {
       saint: "St",
       sainte: "St",
       porte: "Pte",
-      // sur: "/",
+      "-sur-": "-/s-",
+      quartier: "Qr.",
+      rue: "R.",
+      avenue: "Av.",
+      boulevard: "Bd.",
+      place: "Pl.",
+      chemin: "Ch.",
+      champ: "Ch.",
+      stade: "St.",
+      pont: "P.",
     };
-
-    // TODO: Houilles Carr. / Vernon Giv.
-
-    let result = str;
 
     for (const [key, value] of Object.entries(map)) {
       const regex = new RegExp(`\\b${key}\\b`, "gi");
       result = result.replace(regex, value);
     }
 
-    const words = result.split(/\s+/);
-    if (words.length > 1 && result.length > 12) {
-      result = words
-        .map((word, i) => {
-          if (
-            i !== 0 &&
-            word.length > 7 &&
-            word.at(0)?.match(/[A-Z]/) &&
-            !word.includes("-")
-          ) {
-            return word.at(0) + ".";
+    // Retirer les textes entre parenthèses
+    result = result.replace(/\s*\(.*?\)\s*/g, " ");
+
+    // Garder les initiales du premier terme sur les nom avec du/de ...
+    result = result.replace(
+      /\b([\p{L}]{3,})([ -])(l'|le|la|les|du|de|des|en)([ -])?([\p{L}]{3,})\b/giu,
+      (match, nom1, sep1, article, sep2, nom2) => {
+        const nom1Clean = nom1.trim();
+        const nom2Clean = nom2.trim();
+        const abbreviations = Object.values(map);
+
+        if (nom1Clean.length <= nom2Clean.length + 4) {
+          if (abbreviations.includes(nom1Clean)) {
+            return match;
           }
-          if (word.startsWith("St-") && word.length > 15 && words.length > 1) {
-            return word.slice(0, 4) + ".";
+          return `${nom1Clean[0]}.${sep1}${article}${sep2 || ""}${nom2Clean}`;
+        } else {
+          if (abbreviations.includes(nom2Clean)) {
+            return match;
           }
-          return word;
-        })
-        .join(" ");
-    }
+          return `${nom1Clean}${sep1}${article}${sep2 || ""}${nom2Clean[0]}.`;
+        }
+      }
+    );
 
     return result;
   },

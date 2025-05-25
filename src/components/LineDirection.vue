@@ -30,7 +30,9 @@ defineProps<{
       <span class="vehicleNumber" v-else-if="vehicleNumber">
         n° {{ vehicleNumber }}
       </span>
-      <span class="direction">{{ Strings.abbreviate(direction) }}</span>
+      <span class="direction">
+        {{ direction.length > 20 ? Strings.abbreviate(direction) : direction }}
+      </span>
       <span class="via" v-if="via">via {{ Strings.abbreviate(via) }}</span>
       <span class="direct" v-if="direct">&gt;&gt; Direct</span>
     </div>
