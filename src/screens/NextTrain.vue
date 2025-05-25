@@ -4,6 +4,7 @@ import Congestion from "../components/Congestion.vue";
 import Label from "../components/Label.vue";
 import LineDirection from "../components/LineDirection.vue";
 import SideDisruptionPane from "../components/SideDisruptionPane.vue";
+import VerticalStopsList from "../components/VerticalStopsList.vue";
 import { localized } from "../language";
 import type { SimpleJourney } from "../services/Wagon";
 
@@ -66,6 +67,12 @@ defineProps<{
             })
           "
         ></LineDirection>
+        <VerticalStopsList
+          style="height: 46vh"
+          :stops="journey.nextStops"
+          :closed-stops="journey.closedStops"
+          :color="'#' + journey.line.backgroundColor"
+        ></VerticalStopsList>
       </article>
       <article v-if="journey.congestion">
         <h2>Crowding</h2>

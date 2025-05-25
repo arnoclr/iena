@@ -1,14 +1,12 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
-import DepartureBloc from "./components/DepartureBloc.vue";
+import { SIMPLE_JOURNEY } from "./mock";
+import NextTrain from "./screens/NextTrain.vue";
+import NextTrainsWideList from "./screens/NextTrainsWideList.vue";
 import type { SimpleJourney } from "./services/Wagon";
 import { getNextJourneys } from "./services/fetch";
 import { useLangStore } from "./stores/lang";
 import { getParamsFromUrl } from "./url";
-import Clock from "./components/Clock.vue";
-import NextTrainsWideList from "./screens/NextTrainsWideList.vue";
-import NextTrain from "./screens/NextTrain.vue";
-import { SIMPLE_JOURNEY } from "./mock";
 
 const langStore = useLangStore();
 const journeys = ref<SimpleJourney[]>([]);

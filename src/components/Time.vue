@@ -50,7 +50,7 @@ onUnmounted(() => {
   <span class="timeRoot">
     <span class="time">{{
       time.atStop
-        ? localized({ fr: "à quai", en: "", es: "" })
+        ? localized({ fr: "à quai", en: "", es: "en el andén" })
         : time.approaching
         ? localized({ fr: "à l'approche", en: "approaching", es: "" })
         : time.text
