@@ -90,7 +90,7 @@ function getPersonCount(wagon: number) {
           class="person"
           :style="{
             '--x-offset':
-              i === 0 ? '35%' : i === group.length - 1 ? '-120%' : '0',
+              i === 0 ? '35%' : i === group.length - 1 ? '-60%' : '0',
           }"
         >
           <svg
