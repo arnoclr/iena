@@ -12,6 +12,7 @@ defineProps<{
 
 <style scoped>
 .labelRoot {
+  --border-radius: 1.36vh;
   border-radius: var(--border-radius) var(--border-radius) 0 0;
   display: flex;
   color: white;

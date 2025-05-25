@@ -117,14 +117,13 @@ function getPersonCount(wagon: number) {
 <style scoped>
 .groups {
   width: fit-content;
-  height: 8vh;
   display: flex;
-  gap: 1vh;
+  gap: 0.6vh;
 }
 
 .wagons {
   display: flex;
-  gap: 1vh;
+  gap: 0.5vh;
 }
 
 .wagon {

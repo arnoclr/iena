@@ -6,19 +6,29 @@ import { getNextJourneys } from "./services/fetch";
 import { useLangStore } from "./stores/lang";
 import { getParamsFromUrl } from "./url";
 import Clock from "./components/Clock.vue";
+import NextTrainsWideList from "./screens/NextTrainsWideList.vue";
+import NextTrain from "./screens/NextTrain.vue";
+import { SIMPLE_JOURNEY } from "./mock";
 
 const langStore = useLangStore();
 const journeys = ref<SimpleJourney[]>([]);
 const params = ref<ReturnType<typeof getParamsFromUrl>>();
 
 async function updateJourneys() {
-  const { lines, stop, platforms, coordinates } = params.value || {};
+  const { lines, stop, platforms, coordinates, aimedDepartureCount } =
+    params.value || {};
 
-  if (!lines || !stop) {
+  if (!lines || !stop || !coordinates) {
     return;
   }
 
-  journeys.value = await getNextJourneys(coordinates, stop, lines, platforms);
+  journeys.value = await getNextJourneys(
+    aimedDepartureCount || 1,
+    coordinates,
+    stop,
+    lines,
+    platforms
+  );
 }
 
 setInterval(() => {
@@ -34,26 +44,11 @@ onMounted(() => {
 </script>
 
 <template>
-  <ul>
-    <li v-for="(journey, i) in journeys" :key="journey.id">
-      <DepartureBloc
-        :show-short-train="i === 0"
-        :show-stops="i < 2"
-        :line="journey.line"
-        :journey="journey"
-      ></DepartureBloc>
-    </li>
-    <Clock></Clock>
-  </ul>
+  <NextTrain
+    v-if="params?.aimedDepartureCount === 1"
+    :journey="journeys.at(0) || SIMPLE_JOURNEY"
+  ></NextTrain>
+  <NextTrainsWideList v-else :journeys="journeys"></NextTrainsWideList>
 </template>
 
-<style scoped>
-ul {
-  list-style: none;
-  padding: 1.3vh;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 1vh;
-}
-</style>
+<style scoped></style>

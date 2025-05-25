@@ -94,10 +94,6 @@ const labelSeverity = computed(() => {
           :via="journey.metadata?.via"
           :direct="journey.metadata.direct"
         ></LineDirection>
-        <Congestion
-          v-if="journey.congestion?.wagons"
-          :wagons="journey.congestion.wagons"
-        ></Congestion>
         <HorizontalStopsList
           v-if="showStops && !journey.metadata.direct"
           :stops="journey.nextStops"

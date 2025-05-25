@@ -22,6 +22,7 @@ function getFirstUniqueElement<T>(of: Set<T>, notIn: Set<T>): T | undefined {
 }
 
 export async function getNextJourneys(
+  count: number,
   coordinates: string,
   stopArea: string,
   lineIds: string[],
@@ -43,7 +44,7 @@ export async function getNextJourneys(
   for (const departure of departures
     .sort((a, b) => a.leavesAt.diff(b.leavesAt))
     // .filter((x) => platforms?.includes(x.platform || "") || !platforms)
-    .slice(0, 5)) {
+    .slice(0, count)) {
     const journey = await Wagon.journey(
       coordinates,
       departure.id,
