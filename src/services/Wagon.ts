@@ -79,7 +79,7 @@ export class Wagon {
   }
 
   private static get apiKey(): string {
-    return "spad";
+    return "iena";
   }
 
   private static positionFromDTO(positionDto: any): Position {
