@@ -1,5 +1,7 @@
 import dayjs, { Dayjs } from "dayjs";
 
+export type Congestion = "LOW" | "MEDIUM" | "HIGH";
+
 export interface SimpleLine {
   id: string;
   number: string;
@@ -50,8 +52,8 @@ export type SimpleJourney = {
   closedStops: Set<string>;
   skippedStops: Set<string>;
   congestion?: {
-    percentage: number;
-    wagons: number[][];
+    average: Congestion;
+    wagons: Congestion[][];
   };
   metadata: {
     via?: string;
@@ -176,6 +178,16 @@ export class Wagon {
       );
   }
 
+  private static percentageToCongestion(percentage: number): Congestion {
+    if (percentage >= 0.9) {
+      return "HIGH";
+    } else if (percentage >= 0.5) {
+      return "MEDIUM";
+    } else {
+      return "LOW";
+    }
+  }
+
   public static async journey(
     coordinates: string,
     journeyId: string,
@@ -228,8 +240,14 @@ export class Wagon {
       skippedStops,
       congestion: json.data.congestion
         ? {
-            percentage: json.data.congestion.percentage,
-            wagons: json.data.congestion.wagons,
+            average: this.percentageToCongestion(
+              json.data.congestion.percentage || 0
+            ),
+            wagons: json.data.congestion.wagons?.map((wagons: number[]) =>
+              wagons.map((percentage: number) =>
+                this.percentageToCongestion(percentage)
+              )
+            ),
           }
         : undefined,
       metadata: {},

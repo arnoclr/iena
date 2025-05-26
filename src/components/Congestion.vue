@@ -1,26 +1,13 @@
 <script lang="ts" setup>
+import type { Congestion } from "../services/Wagon";
+import MiniCongestion from "./MiniCongestion.vue";
+
 defineProps<{
-  wagons: number[][];
+  wagons: Congestion[][];
 }>();
 
-function congestionClass(wagon: number) {
-  if (wagon >= 0.9) {
-    return "high";
-  } else if (wagon >= 0.5) {
-    return "medium";
-  } else {
-    return "low";
-  }
-}
-
-function getPersonCount(wagon: number) {
-  if (wagon >= 0.9) {
-    return 3;
-  } else if (wagon >= 0.5) {
-    return 2;
-  } else {
-    return 1;
-  }
+function congestionClass(wagon: Congestion) {
+  return wagon.toLowerCase();
 }
 </script>
 
@@ -86,29 +73,15 @@ function getPersonCount(wagon: number) {
           <path d="M164 99.5V35C193.2 54.2 222 85 226 99.5H164Z" fill="white" />
         </svg>
 
-        <div
+        <MiniCongestion
           class="person"
+          :congestion="wagon"
           :style="{
             '--x-offset':
               i === 0 ? '35%' : i === group.length - 1 ? '-60%' : '0',
           }"
         >
-          <svg
-            v-for="_ in getPersonCount(wagon)"
-            width="25"
-            height="110"
-            viewBox="0 0 25 110"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M0 45.5C0 38.5964 5.59644 33 12.5 33V33C19.4036 33 25 38.5964 25 45.5V77H0V45.5Z"
-              fill="white"
-            />
-            <ellipse cx="12.5" cy="14.5" rx="12.5" ry="14.5" fill="white" />
-            <rect x="6" y="77" width="13" height="33" fill="white" />
-          </svg>
-        </div>
+        </MiniCongestion>
       </div>
     </div>
   </div>
@@ -139,11 +112,6 @@ function getPersonCount(wagon: number) {
   display: flex;
   gap: 0.2vh;
   transform: translateX(var(--x-offset, 0));
-}
-
-.person svg {
-  height: 100%;
-  width: auto;
 }
 
 svg {

@@ -19,6 +19,7 @@ defineProps<{
   width: fit-content;
   padding: 1vh 2vh;
   font-size: 3vh;
+  gap: 2vh;
 }
 
 .labelRoot.low {

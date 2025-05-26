@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 import Clock from "../components/Clock.vue";
 import Congestion from "../components/Congestion.vue";
-import HorizontalStopsList from "../components/HorizontalStopsList.vue";
 import Label from "../components/Label.vue";
 import LineDirection from "../components/LineDirection.vue";
+import MiniCongestion from "../components/MiniCongestion.vue";
 import SideDisruptionPane from "../components/SideDisruptionPane.vue";
 import VerticalStopsList from "../components/VerticalStopsList.vue";
 import { localized } from "../language";
@@ -44,6 +44,11 @@ defineProps<{
         </div>
       </div>
       <Label severity="LOW" style="grid-area: label; justify-self: end">
+        <MiniCongestion
+          v-if="journey.congestion"
+          :congestion="journey.congestion?.average"
+          style="height: 3vh; gap: 0.4vh"
+        ></MiniCongestion>
         <span v-if="journey.userStopDeparture.vehicleLength === 'LONG'">{{
           localized({ fr: "Train Long", en: "Long Train", es: "Tren Largo" })
         }}</span>
@@ -75,12 +80,14 @@ defineProps<{
           :color="'#' + journey.line.backgroundColor"
         ></VerticalStopsList>
       </article>
-      <article v-if="journey.congestion">
-        <h2>Crowding</h2>
+      <article v-if="journey.congestion?.wagons.length || 0 > 0">
+        <h2>
+          {{ localized({ fr: "Affluence", en: "Crowding", es: "Crowding" }) }}
+        </h2>
         <div class="centered">
           <Congestion
             style="height: 8.8vh"
-            :wagons="journey.congestion?.wagons"
+            :wagons="journey.congestion?.wagons || []"
           ></Congestion>
         </div>
         <span class="labels">
