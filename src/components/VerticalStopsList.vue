@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onMounted, onUnmounted, ref, watch } from "vue";
+import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import type { SimpleStop } from "../services/Wagon";
 import VerticalStop from "./VerticalStop.vue";
 
@@ -9,35 +9,33 @@ const props = defineProps<{
   closedStops: Set<string>;
 }>();
 
-const LINE_HEIGHT_VH = 8;
-
-const stopsSpan = ref<HTMLSpanElement>();
+const stopsContainer = ref<HTMLElement>();
+const stopsTranslateGroup = ref<HTMLElement>();
 const stopsPagesCount = ref<number>();
 const currentPage = ref<number>(0);
-const stopsPageHeight = ref<number>(0);
 const isTransitionEnabled = ref<boolean>(true);
 let stopsInterval: number | null = null;
 
-function vhToPx(vh: number): number {
-  return (window.innerHeight * vh) / 100;
-}
+const maxDisplayedPagesCount = computed(() => {
+  return Math.max(1, Math.ceil((stopsPagesCount.value || 0) / 2));
+});
 
-function lowestEven(num: number): number {
-  return num % 2 === 0 ? num : num - 1;
-}
+const displayedCurrentPage = computed(() => {
+  return currentPage.value >= maxDisplayedPagesCount.value
+    ? 1
+    : currentPage.value + 1;
+});
 
 function updateJourneyStopsPagesCount() {
-  if (!stopsSpan.value) {
+  if (!stopsContainer.value || !stopsTranslateGroup.value) {
     return;
   }
-  const cellHeight = vhToPx(LINE_HEIGHT_VH);
-  const spanHeight = stopsSpan.value.scrollHeight;
-  stopsPagesCount.value = lowestEven(Math.ceil(spanHeight / cellHeight));
-  stopsPageHeight.value = spanHeight / stopsPagesCount.value;
+  const containerWidth = stopsContainer.value.clientWidth;
+  const translateGroupWidth = stopsTranslateGroup.value.scrollWidth;
+  stopsPagesCount.value = Math.ceil(translateGroupWidth / containerWidth);
 }
 
 function goToNextPage() {
-  return;
   if (!stopsPagesCount.value || stopsPagesCount.value <= 2) {
     return;
   }
@@ -52,7 +50,7 @@ function goToNextPage() {
   }
 }
 
-watch(() => props.stops, updateJourneyStopsPagesCount);
+watch(() => props.stops.map((x) => x.id).join(), updateJourneyStopsPagesCount);
 
 onMounted(() => {
   updateJourneyStopsPagesCount();
@@ -73,10 +71,19 @@ onUnmounted(() => {
     <aside>
       <span>Page</span>
       <br />
-      <span>{{ currentPage }} / {{ stopsPagesCount }}</span>
+      <span>{{ displayedCurrentPage }} / {{ maxDisplayedPagesCount }}</span>
     </aside>
-    <main>
-      <div class="group">
+    <main ref="stopsContainer">
+      <div
+        class="group"
+        ref="stopsTranslateGroup"
+        :class="{ transition: isTransitionEnabled }"
+        :style="{
+          transform: `translateX(calc(-${currentPage * 100}% - ${
+            currentPage || 0 / 2
+          } * 1vw))`,
+        }"
+      >
         <template v-for="_ in 2">
           <VerticalStop
             v-for="stop in stops.slice(1)"
@@ -114,6 +121,10 @@ main {
   column-count: auto;
   column-gap: 1vw;
   column-width: calc(30vw - 10vh);
+}
+
+.group.transition {
+  transition: transform 1s steps(16);
 }
 
 .columnBreak {
