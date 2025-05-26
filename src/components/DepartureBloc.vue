@@ -3,9 +3,8 @@ import { computed } from "vue";
 import { localized } from "../language";
 import type { SimpleJourney, SimpleLine } from "../services/Wagon";
 import HorizontalStopsList from "./HorizontalStopsList.vue";
-import LineDirection from "./LineDirection.vue";
 import Label from "./Label.vue";
-import Congestion from "./Congestion.vue";
+import LineDirection from "./LineDirection.vue";
 
 const props = defineProps<{
   line: SimpleLine;
@@ -87,16 +86,13 @@ const labelSeverity = computed(() => {
         ></div>
         <LineDirection
           :line="line"
-          :direction="departure.destination.name"
-          :journey-code="departure.journeyCode"
-          :vehicle-number="departure.vehicleNumber"
-          :leaves-at="departure.leavesAt"
+          :departure="departure"
           :via="journey.metadata?.via"
           :direct="journey.metadata.direct"
         ></LineDirection>
         <HorizontalStopsList
           v-if="showStops && !journey.metadata.direct"
-          :stops="journey.nextStops"
+          :stops="departure.isCancelled ? [] : journey.nextStops"
           :closed-stops="journey.closedStops"
         ></HorizontalStopsList>
       </div>
@@ -129,7 +125,11 @@ const labelSeverity = computed(() => {
           <ellipse cx="149.5" cy="81" rx="13.5" ry="14" fill="white" />
         </svg>
       </div>
-      <div class="platform" v-else>
+      <div
+        class="platform"
+        v-else
+        :style="{ opacity: departure.isCancelled ? 0 : 1 }"
+      >
         <span>{{ departure.platform ?? "--" }}</span>
       </div>
     </div>

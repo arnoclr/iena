@@ -1,26 +1,30 @@
 <script lang="ts" setup>
-import type { Dayjs } from "dayjs";
-import Time from "./Time.vue";
-import type { SimpleLine } from "../services/Wagon";
-import { Strings } from "../Helpers";
 import { computed } from "vue";
+import { Strings } from "../Helpers";
+import type { SimpleDeparture, SimpleLine } from "../services/Wagon";
+import Time from "./Time.vue";
+import { localized } from "../language";
 
 const props = defineProps<{
   line: SimpleLine;
-  direction: string;
-  journeyCode?: string;
-  vehicleNumber?: string;
-  leavesAt?: Dayjs;
+  departure: SimpleDeparture;
   via?: string;
   direct?: boolean;
   subtitle?: string;
 }>();
 
 const twoLines = computed(() => props.subtitle !== undefined);
+
+const direction = computed(() => {
+  return props.departure.destination.name;
+});
 </script>
 
 <template>
-  <div class="lineDirectionRoot" :class="{ twoLines }">
+  <div
+    class="lineDirectionRoot"
+    :class="{ twoLines, cancelled: departure.isCancelled }"
+  >
     <div
       v-if="line.numberShapeSvg"
       class="shape"
@@ -32,18 +36,18 @@ const twoLines = computed(() => props.subtitle !== undefined);
         {{ direction.length > 20 ? Strings.abbreviate(direction) : direction }}
       </span>
       <span class="subtitle">
-        <span class="journeyCode" v-if="journeyCode">
-          {{ journeyCode.slice(0, 4) ?? "" }}
+        <span class="journeyCode" v-if="departure.journeyCode">
+          {{ departure.journeyCode.slice(0, 4) ?? "" }}
         </span>
         <span>{{ subtitle }}</span>
       </span>
     </div>
     <div class="texts" v-else>
-      <span class="journeyCode" v-if="journeyCode">
-        {{ journeyCode.slice(0, 4) ?? "" }}
+      <span class="journeyCode" v-if="departure.journeyCode">
+        {{ departure.journeyCode.slice(0, 4) ?? "" }}
       </span>
-      <span class="vehicleNumber" v-else-if="vehicleNumber">
-        n° {{ vehicleNumber }}
+      <span class="vehicleNumber" v-else-if="departure.vehicleNumber">
+        n° {{ departure.vehicleNumber }}
       </span>
       <span class="direction">
         {{ direction.length > 20 ? Strings.abbreviate(direction) : direction }}
@@ -52,7 +56,10 @@ const twoLines = computed(() => props.subtitle !== undefined);
       <span class="direct" v-if="direct">&gt;&gt; Direct</span>
     </div>
     <span class="time">
-      <Time v-if="leavesAt" :time="leavesAt"></Time>
+      <span v-if="departure.isCancelled">{{
+        localized({ fr: "supprimé", en: "cancelled", es: "suprimido" })
+      }}</span>
+      <Time v-else-if="departure.leavesAt" :time="departure.leavesAt"></Time>
     </span>
   </div>
 </template>
@@ -127,6 +134,13 @@ span.journeyCode {
   font-family: monospace;
 }
 
+.cancelled span.journeyCode,
+.cancelled span.vehicleNumber,
+.cancelled span.direction,
+.cancelled:deep(svg) {
+  opacity: 0.6;
+}
+
 span.vehicleNumber {
   font-size: 2vh;
   transform: translateY(-1.5vh);
@@ -144,6 +158,7 @@ span.direct {
 }
 
 span.time {
+  font-size: 5vh;
   padding: 0.4vh;
   margin-left: auto;
 }

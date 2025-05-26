@@ -34,6 +34,7 @@ export interface SimpleDeparture {
     id: string;
   };
   leavesAt: Dayjs;
+  isCancelled?: boolean;
   arrivesAt: Dayjs;
   id: string;
   branchHash?: string;
@@ -164,6 +165,8 @@ export class Wagon {
               departure.arrival?.theoretical ||
               "invalid"
           ),
+          isCancelled:
+            departure.arrival.canceled || departure.departure.canceled,
           id: departure.journeyId,
           branchHash: departure.branchHash,
           journeyCode: departure.journeyCode,
