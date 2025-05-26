@@ -80,7 +80,7 @@ defineProps<{
           :color="'#' + journey.line.backgroundColor"
         ></VerticalStopsList>
       </article>
-      <article v-if="journey.congestion?.wagons.length || 0 > 0">
+      <article v-if="journey.congestion?.wagons?.length || 0 > 0">
         <h2>
           {{ localized({ fr: "Affluence", en: "Crowding", es: "Crowding" }) }}
         </h2>
