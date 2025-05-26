@@ -134,6 +134,7 @@ span.vehicleNumber {
 
 span.via,
 span.direct {
+  white-space: nowrap;
   color: var(--text-light);
   font-size: 4.5vh;
 }
