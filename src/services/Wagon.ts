@@ -49,6 +49,10 @@ export type SimpleJourney = {
   nextStops: SimpleStop[];
   closedStops: Set<string>;
   skippedStops: Set<string>;
+  congestion?: {
+    percentage: number;
+    wagons: number[][];
+  };
   metadata: {
     via?: string;
     direct?: boolean;
@@ -215,10 +219,19 @@ export class Wagon {
       stops,
       nextStops: [...stops]
         .slice(stops.findIndex((stop: any) => stop.id === userStopAreaId))
-        .filter((x) => skippedStops.has(x.id) === false),
+        .filter(
+          (x) =>
+            skippedStops.has(x.id) === false || closedStops.has(x.id) === true
+        ),
       line,
       closedStops,
       skippedStops,
+      congestion: json.data.congestion
+        ? {
+            percentage: json.data.congestion.percentage,
+            wagons: json.data.congestion.wagons,
+          }
+        : undefined,
       metadata: {},
     };
   }

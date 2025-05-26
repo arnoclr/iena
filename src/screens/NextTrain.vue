@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import Clock from "../components/Clock.vue";
 import Congestion from "../components/Congestion.vue";
+import HorizontalStopsList from "../components/HorizontalStopsList.vue";
 import Label from "../components/Label.vue";
 import LineDirection from "../components/LineDirection.vue";
 import SideDisruptionPane from "../components/SideDisruptionPane.vue";
@@ -39,7 +40,7 @@ defineProps<{
           localized({ fr: "Quai", en: "Platform", es: "Anden" })
         }}</span>
         <div class="platform">
-          <span>{{ journey.userStopDeparture.platform }}</span>
+          <span>{{ journey.userStopDeparture.platform || "--" }}</span>
         </div>
       </div>
       <Label severity="LOW" style="grid-area: label; justify-self: end">
@@ -69,7 +70,7 @@ defineProps<{
         ></LineDirection>
         <VerticalStopsList
           style="height: 46vh"
-          :stops="journey.nextStops"
+          :stops="journey.nextStops || []"
           :closed-stops="journey.closedStops"
           :color="'#' + journey.line.backgroundColor"
         ></VerticalStopsList>

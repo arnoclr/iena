@@ -13,8 +13,24 @@ defineProps<{
   <div :style="{ '--color': color }">
     <article>
       <div class="path"></div>
-      <div class="dot"></div>
-      <span>{{ Strings.limit(Strings.abbreviate(stop.name), 24) }}</span>
+      <div class="dot" v-if="!tags.has('CLOSED')"></div>
+      <svg
+        v-if="tags.has('CLOSED')"
+        class="xmark"
+        xmlns="http://www.w3.org/2000/svg"
+        height="24px"
+        viewBox="0 -960 960 960"
+        width="24px"
+        fill="currentColor"
+      >
+        <path
+          d="M256-181.91 181.91-256l224-224-224-224L256-778.09l224 224 224-224L778.09-704l-224 224 224 224L704-181.91l-224-224-224 224Z"
+        />
+      </svg>
+      <span :class="{ gray: tags.has('CLOSED') }">{{
+        Strings.limit(Strings.abbreviate(stop.name), 19)
+      }}</span>
+      <span class="deleted" v-if="tags.has('CLOSED')">Supprimé</span>
     </article>
   </div>
 </template>
@@ -44,8 +60,30 @@ article {
   transform: translateX(-17%);
 }
 
+.xmark {
+  position: absolute;
+  width: 5vh;
+  height: 5vh;
+  transform: translateX(-30%);
+  fill: var(--high-congestion);
+}
+
 span {
   font-size: 4.6vh;
   color: var(--text);
+}
+
+span.gray {
+  opacity: 0.5;
+}
+
+.deleted {
+  padding: 0.2vh 0.5vh;
+  position: absolute;
+  right: 2vh;
+  border-radius: 0.4vh;
+  font-size: 2.5vh;
+  color: var(--text);
+  background-color: var(--alert-background);
 }
 </style>

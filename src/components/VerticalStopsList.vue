@@ -83,7 +83,7 @@ onUnmounted(() => {
             class="stop"
             :stop="stop"
             :color="color"
-            :tags="new Set()"
+            :tags="new Set(closedStops.has(stop.id) ? ['CLOSED'] : [])"
           ></VerticalStop>
           <div class="columnBreak"></div>
         </template>
