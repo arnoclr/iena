@@ -72,7 +72,7 @@ export async function getNextJourneys(
     if (journey.userStopDeparture.platform === "unknown") {
       journey.metadata.flag = "OUTSIDE_PLATFORM";
     }
-    if (journey.closedStops.size > 0) {
+    if (journey.nextStops.some((stop) => journey.closedStops.has(stop.id))) {
       journey.metadata.flag = "MODIFIED_JOURNEY";
     }
     if (journey.line.isOnRoad && hasNonBusLines) {
