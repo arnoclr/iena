@@ -66,8 +66,6 @@ export async function getNextJourneys(
     journeysPattern.set(journeyPattern, journey);
   }
 
-  const hasNonBusLines = journeys.some((journey) => !journey.line.isOnRoad);
-
   for (const journey of journeys) {
     journey.metadata.direct = journey.nextStops.length === 2;
     if (journey.userStopDeparture.platform === "unknown") {
@@ -76,7 +74,15 @@ export async function getNextJourneys(
     if (journey.nextStops.some((stop) => journey.closedStops.has(stop.id))) {
       journey.metadata.flag = "MODIFIED_JOURNEY";
     }
-    if (journey.line.isOnRoad && hasNonBusLines) {
+    const isReplacementBusName =
+      /^[A-Z]$/.test(journey.line.number) ||
+      /^T[0-9]{1,2}$/.test(journey.line.number) ||
+      journey.line.number.startsWith("BUS");
+    if (
+      journey.line.isOnRoad &&
+      isReplacementBusName &&
+      journey.line.id.includes("IDFM:")
+    ) {
       journey.metadata.flag = "REPLACEMENT_BUS";
     }
     // fill the via metadata
