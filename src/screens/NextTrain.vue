@@ -62,9 +62,7 @@ defineProps<{
       <article>
         <LineDirection
           :line="journey.line"
-          :direction="journey.userStopDeparture.destination.name"
-          :journey-code="journey.userStopDeparture.journeyCode"
-          :leaves-at="journey.userStopDeparture.leavesAt"
+          :departure="journey.userStopDeparture"
           :subtitle="
             localized({
               fr: 'Dessert',

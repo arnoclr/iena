@@ -26,6 +26,7 @@ export async function getNextJourneys(
   coordinates: string,
   stopArea: string,
   lineIds: string[],
+  /** @ts-ignore */
   platforms?: string[]
 ): Promise<SimpleJourney[]> {
   const departures: SimpleDeparture[] = [];
