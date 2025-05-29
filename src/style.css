@@ -16,6 +16,12 @@
   font-style: italic;
 }
 
+@font-face {
+  font-family: "Parisine";
+  src: url("/Parisine-Bold.otf");
+  font-weight: bold;
+}
+
 :root {
   --equipment-background: #166d71;
   --alert-background: #FA0101;
