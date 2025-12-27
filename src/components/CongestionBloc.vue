@@ -3,7 +3,7 @@ import { localized } from "../language";
 import type { SimpleJourney } from "../services/Wagon";
 import Congestion from "./Congestion.vue";
 
-const props = defineProps<{
+defineProps<{
   congestion: SimpleJourney["congestion"];
 }>();
 </script>

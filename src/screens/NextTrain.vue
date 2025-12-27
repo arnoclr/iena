@@ -6,7 +6,7 @@ import SideDisruptionPane from "../components/SideDisruptionPane.vue";
 import { localized } from "../language";
 import type { SimpleJourney } from "../services/Wagon";
 
-const props = defineProps<{
+defineProps<{
   journey: SimpleJourney;
   journeysCount: number;
 }>();
