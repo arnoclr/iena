@@ -56,7 +56,7 @@ defineSlots<{
   <main>
     <div>
       <Label style="opacity: 0" severity="LOW">x</Label>
-      <SideDisruptionPane :disruptions="[]"></SideDisruptionPane>
+      <SideDisruptionPane side="LEFT" :disruptions="[]"></SideDisruptionPane>
     </div>
     <div class="journey">
       <BigDepartureBloc

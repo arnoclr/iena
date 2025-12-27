@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import Clock from "../components/Clock.vue";
 import DepartureBloc from "../components/DepartureBloc.vue";
+import SideDisruptionPane from "../components/SideDisruptionPane.vue";
 import type { SimpleJourney } from "../services/Wagon";
 
 defineProps<{
@@ -18,17 +19,39 @@ defineProps<{
         :journey="journey"
       ></DepartureBloc>
     </li>
-    <Clock></Clock>
+    <SideDisruptionPane
+      class="pane"
+      side="BOTTOM"
+      :disruptions="[]"
+    ></SideDisruptionPane>
+    <Clock class="clock"></Clock>
   </ul>
 </template>
 
 <style scoped>
 ul {
-  list-style: none;
-  padding: 1.3vh;
+  padding: 0;
   margin: 0;
+  list-style: none;
   display: flex;
   flex-direction: column;
   gap: 1vh;
+}
+
+li {
+  padding: 0 1.5vh;
+}
+
+.clock {
+  position: fixed;
+  bottom: 1.5vh;
+  right: 1.5vh;
+}
+
+.pane {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
 }
 </style>
