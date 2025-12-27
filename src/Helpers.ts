@@ -1,3 +1,6 @@
+import dayjs from "dayjs";
+import type { SimpleJourney } from "./services/Wagon";
+
 export const Strings = {
   abbreviate: (str: string): string => {
     let result = str;
@@ -57,5 +60,28 @@ export const Strings = {
       return str;
     }
     return str.slice(0, maxLength - 1) + ".";
+  },
+};
+
+export const Journey = {
+  trainLocation: (journey: SimpleJourney) => {
+    const arrivingStopIndex = journey.stops.findIndex((stop) =>
+      dayjs().isBefore(stop.departure)
+    );
+    const leavedStop = journey.stops.at(arrivingStopIndex - 1);
+    const arrivingStop = journey.stops.at(arrivingStopIndex);
+
+    if (!arrivingStop || !leavedStop || arrivingStopIndex - 1 < 0) return null;
+
+    if (dayjs().isAfter(arrivingStop.arrival)) {
+      return {
+        at: arrivingStop,
+      };
+    }
+
+    return {
+      leaves: leavedStop,
+      arrives: arrivingStop,
+    };
   },
 };

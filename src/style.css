@@ -32,6 +32,9 @@
   --text: white;
   --text-light: #CCC;
   --background: #171a3c;
+  --highlight: #464863;
+  --surface: #2B3151;
+  --surface-border: #50516C;
 }
 
 body {

@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { onMounted, onUnmounted, ref } from "vue";
 import Clock from "../components/Clock.vue";
 import Congestion from "../components/Congestion.vue";
 import Label from "../components/Label.vue";
@@ -6,12 +7,28 @@ import LineDirection from "../components/LineDirection.vue";
 import MiniCongestion from "../components/MiniCongestion.vue";
 import SideDisruptionPane from "../components/SideDisruptionPane.vue";
 import VerticalStopsList from "../components/VerticalStopsList.vue";
+import { Journey } from "../Helpers";
 import { localized } from "../language";
 import type { SimpleJourney } from "../services/Wagon";
 
-defineProps<{
+const props = defineProps<{
   journey: SimpleJourney;
 }>();
+
+const trainPosition = ref<ReturnType<typeof Journey.trainLocation> | null>(
+  null
+);
+let interval: ReturnType<typeof setInterval>;
+
+onMounted(() => {
+  interval = setInterval(() => {
+    trainPosition.value = Journey.trainLocation(props.journey);
+  }, 5_000);
+});
+
+onUnmounted(() => {
+  clearInterval(interval);
+});
 </script>
 
 <template>
@@ -70,6 +87,7 @@ defineProps<{
               es: 'Estaciones',
             })
           "
+          :train-location="trainPosition"
         ></LineDirection>
         <VerticalStopsList
           style="height: 46vh"

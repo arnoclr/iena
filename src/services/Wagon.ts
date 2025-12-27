@@ -44,12 +44,17 @@ export interface SimpleDeparture {
   platform?: string;
 }
 
+type SimpleStopTime = {
+  arrival: Dayjs;
+  departure: Dayjs;
+} & SimpleStop;
+
 export type SimpleJourney = {
   id: string;
   line: SimpleLine;
   userStopDeparture: SimpleDeparture;
-  stops: SimpleStop[];
-  nextStops: SimpleStop[];
+  stops: SimpleStopTime[];
+  nextStops: SimpleStopTime[];
   closedStops: Set<string>;
   skippedStops: Set<string>;
   congestion?: {
@@ -218,8 +223,16 @@ export class Wagon {
     const json = await response.json();
 
     const stops = json.data.stops.map((stop: any) => {
-      return this.stopFromDTO(stop.stop, []);
-    });
+      return {
+        ...this.stopFromDTO(stop.stop, []),
+        arrival: dayjs(
+          stop.arrivesAt?.realTime || stop.arrivesAt?.theoretical || "invalid"
+        ),
+        departure: dayjs(
+          stop.leavesAt?.realTime || stop.leavesAt?.theoretical || "invalid"
+        ),
+      };
+    }) satisfies SimpleStopTime[];
 
     const line = this.lineFromDTO(json.data.line);
     const skippedStops = new Set<string>(
