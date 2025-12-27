@@ -117,7 +117,7 @@ main {
 }
 
 .group {
-  height: 40vh;
+  height: 100%;
   column-count: auto;
   column-gap: 1vw;
   column-width: calc(30vw - 10vh);

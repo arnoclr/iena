@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
+import BigDepartureBloc from "./components/BigDepartureBloc.vue";
+import CongestionBloc from "./components/CongestionBloc.vue";
 import { SIMPLE_JOURNEY } from "./mock";
 import NextTrain from "./screens/NextTrain.vue";
 import NextTrainsWideList from "./screens/NextTrainsWideList.vue";
@@ -43,9 +45,21 @@ onMounted(() => {
 
 <template>
   <NextTrain
-    v-if="params?.aimedDepartureCount === 1"
+    v-if="(params?.aimedDepartureCount || 1) <= 3"
     :journey="journeys.at(0) || SIMPLE_JOURNEY"
-  ></NextTrain>
+    :journeys-count="journeys.length"
+  >
+    <CongestionBloc
+      v-if="params?.aimedDepartureCount === 1"
+      :congestion="journeys.at(0)?.congestion || SIMPLE_JOURNEY.congestion"
+    ></CongestionBloc>
+    <div v-else v-for="(journey, i) in journeys.slice(1)" :key="journey.id">
+      <BigDepartureBloc
+        :show-labels="i === 0"
+        :journey="journey"
+      ></BigDepartureBloc>
+    </div>
+  </NextTrain>
   <NextTrainsWideList v-else :journeys="journeys"></NextTrainsWideList>
 </template>
 

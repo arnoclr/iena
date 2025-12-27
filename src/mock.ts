@@ -85,9 +85,32 @@ export const SIMPLE_JOURNEY: SimpleJourney = {
   line: SIMPLE_LINE,
   id: "2",
   userStopDeparture: SIMPLE_DEPARTURE,
-  stops: [SIMPLE_STOP_1, SIMPLE_STOP_2, SIMPLE_STOP_3, SIMPLE_STOP_4],
+  stops: [SIMPLE_STOP_1, SIMPLE_STOP_2, SIMPLE_STOP_3, SIMPLE_STOP_4].map(
+    (stop, index) => ({
+      ...stop,
+      arrival: dayjs().add(5 + index * 5, "minutes"),
+      departure: dayjs().add(7 + index * 5, "minutes"),
+    })
+  ),
   closedStops: new Set(["3"]),
   skippedStops: new Set([]),
-  metadata: {},
-  nextStops: [SIMPLE_STOP_2, SIMPLE_STOP_3, SIMPLE_STOP_4],
+  metadata: {
+    via: "Aéroport Charles de Gaulle",
+    direct: false,
+    flag: "MODIFIED_JOURNEY",
+  },
+  nextStops: [SIMPLE_STOP_2, SIMPLE_STOP_3, SIMPLE_STOP_4].map(
+    (stop, index) => ({
+      ...stop,
+      arrival: dayjs().add(5 + index * 5, "minutes"),
+      departure: dayjs().add(7 + index * 5, "minutes"),
+    })
+  ),
+  congestion: {
+    average: "MEDIUM",
+    wagons: [
+      ["LOW", "LOW", "MEDIUM", "HIGH", "MEDIUM"],
+      ["LOW", "MEDIUM", "MEDIUM", "HIGH", "HIGH"],
+    ],
+  },
 };

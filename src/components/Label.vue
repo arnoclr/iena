@@ -18,6 +18,7 @@ defineProps<{
   color: white;
   width: fit-content;
   padding: 1vh 2vh;
+  padding-bottom: 1.8vh;
   font-size: 3vh;
   gap: 2vh;
 }

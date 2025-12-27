@@ -229,6 +229,9 @@ span.subtitle {
   background-color: var(--highlight);
   border-radius: 1vh;
   padding: 0.5vh 0.8vh;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 77vh;
 }
 
 .trainLocation span {

@@ -32,7 +32,7 @@ onUnmounted(() => {
 <style scoped>
 .clock {
   width: fit-content;
-  height: 7vh;
+  height: 6vh;
   padding: 0 2vh;
   display: grid;
   place-items: center;
