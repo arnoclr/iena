@@ -42,6 +42,10 @@ li {
   padding: 0 1.5vh;
 }
 
+li:first-child {
+  margin-top: 1.5vh;
+}
+
 .clock {
   position: fixed;
   bottom: 1.5vh;

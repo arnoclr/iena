@@ -94,6 +94,7 @@ h1 {
   margin: 0;
   font-size: 5vh;
   color: var(--background);
+  transform: translateY(2vh);
 }
 
 .journey {
