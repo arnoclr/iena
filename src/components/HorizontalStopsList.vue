@@ -15,7 +15,6 @@ const stopsPagesCount = ref<number>();
 const currentPage = ref<number>(0);
 const stopsPageHeight = ref<number>(0);
 const isTransitionEnabled = ref<boolean>(true);
-let stopsInterval: number | null = null;
 
 function vhToPx(vh: number): number {
   return (window.innerHeight * vh) / 100;
@@ -55,14 +54,12 @@ watch(() => props.stops, updateJourneyStopsPagesCount);
 onMounted(() => {
   updateJourneyStopsPagesCount();
   window.addEventListener("resize", updateJourneyStopsPagesCount);
-  stopsInterval = setInterval(goToNextPage, 5000);
+  window.addEventListener("stopsListChange", goToNextPage);
 });
 
 onUnmounted(() => {
-  if (stopsInterval) {
-    clearInterval(stopsInterval);
-  }
   window.removeEventListener("resize", updateJourneyStopsPagesCount);
+  window.removeEventListener("stopsListChange", goToNextPage);
 });
 </script>
 
@@ -124,7 +121,7 @@ onUnmounted(() => {
 }
 
 .journey .group.transition {
-  transition: transform 1s steps(9);
+  transition: transform 0.5s ease-in-out;
 }
 
 .stop.closed .name {

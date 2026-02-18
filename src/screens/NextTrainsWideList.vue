@@ -10,7 +10,7 @@ defineProps<{
 </script>
 
 <template>
-  <ul>
+  <TransitionGroup name="list" tag="ul">
     <li v-for="(journey, i) in journeys" :key="journey.id">
       <DepartureBloc
         :show-short-train="i === 0"
@@ -25,17 +25,18 @@ defineProps<{
       :disruptions="[]"
     ></SideDisruptionPane>
     <Clock class="clock"></Clock>
-  </ul>
+  </TransitionGroup>
 </template>
 
 <style scoped>
 ul {
+  --gap: 1vh;
   padding: 0;
   margin: 0;
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 1vh;
+  gap: var(--gap);
 }
 
 li {
@@ -57,5 +58,31 @@ li:first-child {
   bottom: 0;
   left: 0;
   width: 100%;
+}
+
+.list-move,
+.list-leave-active,
+.list-enter-active {
+  transition: all 2s linear;
+}
+
+.list-leave-from,
+.list-enter-to {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.list-leave-to {
+  transform: translateY(calc(-100% - var(--gap)));
+  opacity: 1;
+}
+
+.list-enter-from {
+  transform: translateY(calc(100% + var(--gap)));
+  opacity: 0;
+}
+
+.list-leave-active {
+  position: absolute;
 }
 </style>

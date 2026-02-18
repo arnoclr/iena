@@ -13,6 +13,7 @@ import { getParamsFromUrl } from "./url";
 const langStore = useLangStore();
 const journeys = ref<SimpleJourney[]>([]);
 const params = ref<ReturnType<typeof getParamsFromUrl>>();
+const stopsListChangeEvent = new Event("stopsListChange");
 
 async function updateJourneys() {
   const { lines, stop, platforms, coordinates, aimedDepartureCount } =
@@ -27,13 +28,17 @@ async function updateJourneys() {
     coordinates,
     stop,
     lines,
-    platforms
+    platforms,
   );
 }
 
 setInterval(() => {
   langStore.cycleLang();
-}, 5000);
+}, 8000);
+
+setInterval(() => {
+  window.dispatchEvent(stopsListChangeEvent);
+}, 7000);
 
 setInterval(updateJourneys, 60_100);
 
@@ -50,12 +55,12 @@ onMounted(() => {
     :journeys-count="journeys.length"
   >
     <CongestionBloc
-      v-if="params?.aimedDepartureCount === 1"
-      :congestion="journeys.at(0)?.congestion || SIMPLE_JOURNEY.congestion"
+      v-if="params?.aimedDepartureCount === 1 && journeys.at(0)?.congestion"
+      :congestion="journeys.at(0)?.congestion"
     ></CongestionBloc>
-    <div v-else v-for="(journey, i) in journeys.slice(1)" :key="journey.id">
+    <div v-else v-for="journey in journeys.slice(1)" :key="journey.id">
       <BigDepartureBloc
-        :show-labels="i === 0"
+        :show-labels="true"
         :journey="journey"
       ></BigDepartureBloc>
     </div>

@@ -15,7 +15,7 @@ const props = defineProps<{
 }>();
 
 const trainPosition = ref<ReturnType<typeof Journey.trainLocation> | null>(
-  null
+  null,
 );
 let interval: ReturnType<typeof setInterval>;
 

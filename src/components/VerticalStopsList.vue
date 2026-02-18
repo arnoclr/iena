@@ -1,7 +1,8 @@
 <script lang="ts" setup>
-import { computed, onMounted, onUnmounted, ref, watch } from "vue";
+import { computed, onMounted, onUnmounted, ref } from "vue";
 import type { SimpleStop } from "../services/Wagon";
 import VerticalStop from "./VerticalStop.vue";
+import WithFade from "./animations/WithFade.vue";
 
 const props = defineProps<{
   stops: SimpleStop[];
@@ -9,60 +10,36 @@ const props = defineProps<{
   closedStops: Set<string>;
 }>();
 
-const stopsContainer = ref<HTMLElement>();
-const stopsTranslateGroup = ref<HTMLElement>();
-const stopsPagesCount = ref<number>();
-const currentPage = ref<number>(0);
-const isTransitionEnabled = ref<boolean>(true);
-let stopsInterval: number | null = null;
+const ITEMS_PER_PAGE = 8;
 
-const maxDisplayedPagesCount = computed(() => {
-  return Math.max(1, Math.ceil((stopsPagesCount.value || 0) / 2));
+const currentPageIndex = ref<number>(0);
+
+const totalPages = computed(() => {
+  const stopsCount = Math.max(0, props.stops.length - 1);
+  return Math.ceil(stopsCount / ITEMS_PER_PAGE) || 1;
 });
 
-const displayedCurrentPage = computed(() => {
-  return currentPage.value >= maxDisplayedPagesCount.value
-    ? 1
-    : currentPage.value + 1;
+const currentPageStops = computed(() => {
+  const allStops = props.stops.slice(1);
+  const start = currentPageIndex.value * ITEMS_PER_PAGE;
+  const end = start + ITEMS_PER_PAGE;
+
+  return allStops.slice(start, end);
 });
 
-function updateJourneyStopsPagesCount() {
-  if (!stopsContainer.value || !stopsTranslateGroup.value) {
-    return;
-  }
-  const containerWidth = stopsContainer.value.clientWidth;
-  const translateGroupWidth = stopsTranslateGroup.value.scrollWidth;
-  stopsPagesCount.value = Math.ceil(translateGroupWidth / containerWidth);
-}
+const displayedCurrentPage = computed(() => currentPageIndex.value + 1);
 
 function goToNextPage() {
-  if (!stopsPagesCount.value || stopsPagesCount.value <= 2) {
-    return;
-  }
-  currentPage.value++;
-  if (currentPage.value >= stopsPagesCount.value / 2 + 1) {
-    isTransitionEnabled.value = false;
-    currentPage.value = 0;
-    setTimeout(() => {
-      isTransitionEnabled.value = true;
-      goToNextPage();
-    }, 200);
-  }
+  if (totalPages.value <= 1) return;
+  currentPageIndex.value = (currentPageIndex.value + 1) % totalPages.value;
 }
 
-watch(() => props.stops.map((x) => x.id).join(), updateJourneyStopsPagesCount);
-
 onMounted(() => {
-  updateJourneyStopsPagesCount();
-  window.addEventListener("resize", updateJourneyStopsPagesCount);
-  stopsInterval = setInterval(goToNextPage, 5000);
+  window.addEventListener("stopsListChange", goToNextPage);
 });
 
 onUnmounted(() => {
-  if (stopsInterval) {
-    clearInterval(stopsInterval);
-  }
-  window.removeEventListener("resize", updateJourneyStopsPagesCount);
+  window.removeEventListener("stopsListChange", goToNextPage);
 });
 </script>
 
@@ -71,30 +48,29 @@ onUnmounted(() => {
     <aside>
       <span>Page</span>
       <br />
-      <span>{{ displayedCurrentPage }} / {{ maxDisplayedPagesCount }}</span>
-    </aside>
-    <main ref="stopsContainer">
-      <div
-        class="group"
-        ref="stopsTranslateGroup"
-        :class="{ transition: isTransitionEnabled }"
-        :style="{
-          transform: `translateX(calc(-${currentPage * 100}% - ${
-            currentPage || 0 / 2
-          } * 1vw))`,
-        }"
+      <span
+        ><WithFade>
+          <span :key="displayedCurrentPage">
+            {{ displayedCurrentPage }}
+          </span>
+        </WithFade>
+        / {{ totalPages }}</span
       >
-        <template v-for="_ in 2">
+    </aside>
+
+    <main>
+      <WithFade>
+        <div class="page-container" :key="currentPageIndex">
           <VerticalStop
-            v-for="stop in stops.slice(1)"
+            v-for="stop in currentPageStops"
+            :key="stop.id"
             class="stop"
             :stop="stop"
             :color="color"
             :tags="new Set(closedStops.has(stop.id) ? ['CLOSED'] : [])"
-          ></VerticalStop>
-          <div class="columnBreak"></div>
-        </template>
-      </div>
+          />
+        </div>
+      </WithFade>
     </main>
   </div>
 </template>
@@ -104,9 +80,11 @@ onUnmounted(() => {
   display: grid;
   grid-template-columns: 10vh auto;
   gap: 2vh;
+  height: 100%;
 }
 
 aside {
+  padding-top: 1vh;
   font-size: 2.5vh;
   color: var(--text);
 }
@@ -114,22 +92,18 @@ aside {
 main {
   padding: 1vh;
   overflow: hidden;
+  position: relative;
 }
 
-.group {
+.page-container {
   height: 100%;
-  column-count: auto;
-  column-gap: 1vw;
-  column-width: calc(30vw - 10vh);
+  column-count: 2;
+  column-gap: 2vw;
+  column-fill: auto;
 }
 
-.group.transition {
-  transition: transform 1s steps(16);
-}
-
-.columnBreak {
+.stop {
   break-inside: avoid;
-  width: 1px;
-  height: 100%;
+  page-break-inside: avoid;
 }
 </style>

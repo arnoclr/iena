@@ -4,6 +4,7 @@ import { Journey, Strings } from "../Helpers";
 import type { SimpleDeparture, SimpleLine } from "../services/Wagon";
 import Time from "./Time.vue";
 import { localized } from "../language";
+import WithFade from "./animations/WithFade.vue";
 
 const props = defineProps<{
   line: SimpleLine;
@@ -40,48 +41,47 @@ const direction = computed(() => {
         <span class="journeyCode" v-if="departure.journeyCode">
           {{ departure.journeyCode.slice(0, 4) ?? "" }}
         </span>
-        <div
-          v-if="trainLocation && !departure.isCancelled"
-          class="trainLocation"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            height="24px"
-            viewBox="0 -960 960 960"
-            width="24px"
-            fill="#1f1f1f"
-          >
-            <path
-              d="M480-116q-13.5 0-26.6-4.75Q440.29-125.5 430-135q-52-47.5-99-99.25t-82.75-105q-35.75-53.25-57-106.75T170-550.5q0-145.88 93.75-232.44T480-869.5q122.5 0 216.25 86.56T790-550.5q0 51-21.25 104.5t-57 106.75Q676-286 629-234.25T530-135q-10.29 9.5-23.4 14.25Q493.5-116 480-116Zm.02-366.5q31.98 0 54.73-22.77 22.75-22.77 22.75-54.75t-22.77-54.73q-22.77-22.75-54.75-22.75t-54.73 22.77q-22.75 22.77-22.75 54.75t22.77 54.73q22.77 22.75 54.75 22.75Z"
-            />
-          </svg>
-          <span v-if="trainLocation.at">
-            <span
-              >{{
-                localized({
-                  fr: "Se situe à",
-                  en: "Located at",
-                  es: "En la estación de",
-                })
-              }}
-              {{ trainLocation.at?.name }}</span
+        <WithFade v-if="trainLocation && !departure.isCancelled">
+          <div class="trainLocation" :key="trainLocation.toString()">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="24px"
+              viewBox="0 -960 960 960"
+              width="24px"
+              fill="#1f1f1f"
             >
-          </span>
-          <span v-if="trainLocation.arrives && trainLocation.leaves">
-            <span
-              >{{
-                localized({
-                  fr: "Se situe entre",
-                  en: "Located between",
-                  es: "Se situa entre",
-                })
-              }}
-              {{ Strings.abbreviate(trainLocation.leaves?.name) }}
-              {{ localized({ fr: "et", en: "and", es: "y" }) }}
-              {{ Strings.abbreviate(trainLocation.arrives?.name) }}</span
-            >
-          </span>
-        </div>
+              <path
+                d="M480-116q-13.5 0-26.6-4.75Q440.29-125.5 430-135q-52-47.5-99-99.25t-82.75-105q-35.75-53.25-57-106.75T170-550.5q0-145.88 93.75-232.44T480-869.5q122.5 0 216.25 86.56T790-550.5q0 51-21.25 104.5t-57 106.75Q676-286 629-234.25T530-135q-10.29 9.5-23.4 14.25Q493.5-116 480-116Zm.02-366.5q31.98 0 54.73-22.77 22.75-22.77 22.75-54.75t-22.77-54.73q-22.77-22.75-54.75-22.75t-54.73 22.77q-22.75 22.77-22.75 54.75t22.77 54.73q22.77 22.75 54.75 22.75Z"
+              />
+            </svg>
+            <span v-if="trainLocation.at">
+              <span
+                >{{
+                  localized({
+                    fr: "Se situe à",
+                    en: "Located at",
+                    es: "En la estación de",
+                  })
+                }}
+                {{ trainLocation.at?.name }}</span
+              >
+            </span>
+            <span v-if="trainLocation.arrives && trainLocation.leaves">
+              <span
+                >{{
+                  localized({
+                    fr: "Se situe entre",
+                    en: "Located between",
+                    es: "Se situa entre",
+                  })
+                }}
+                {{ Strings.abbreviate(trainLocation.leaves?.name) }}
+                {{ localized({ fr: "et", en: "and", es: "y" }) }}
+                {{ Strings.abbreviate(trainLocation.arrives?.name) }}</span
+              >
+            </span>
+          </div>
+        </WithFade>
         <span v-else>{{ subtitle }}</span>
       </span>
     </div>
@@ -212,6 +212,7 @@ span.time {
 }
 
 span.subtitle {
+  padding-top: 0.8vh;
   display: flex;
   align-items: center;
   gap: 2vh;

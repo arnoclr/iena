@@ -38,7 +38,7 @@ onUnmounted(() => {
   place-items: center;
   background-color: white;
   color: black;
-  border-radius: 2vh;
+  border-radius: 0.6vh;
   font-size: 5vh;
   font-weight: bold;
 }

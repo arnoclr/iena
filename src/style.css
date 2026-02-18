@@ -25,7 +25,8 @@
 :root {
   --equipment-background: #166d71;
   --alert-background: #FA0101;
-  --worksite-background: #F45206;
+  --worksite-background: #ca5119;
+  --on-work-background: #2B3151;
   --high-congestion: #E8565C;
   --medium-congestion: #DA7A2C;
   --low-congestion: #58A470;
