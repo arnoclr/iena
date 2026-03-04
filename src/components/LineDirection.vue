@@ -58,9 +58,9 @@ const direction = computed(() => {
               <span
                 >{{
                   localized({
-                    fr: "Se situe à",
-                    en: "Located at",
-                    es: "En la estación de",
+                    fr: "en gare de",
+                    en: "in the station of",
+                    es: "en la estación de",
                   })
                 }}
                 {{ trainLocation.at?.name }}</span
@@ -71,7 +71,7 @@ const direction = computed(() => {
                 >{{
                   localized({
                     fr: "Se situe entre",
-                    en: "Located between",
+                    en: "Is between",
                     es: "Se situa entre",
                   })
                 }}

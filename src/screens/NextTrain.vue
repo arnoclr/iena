@@ -26,12 +26,12 @@ defineSlots<{
             ? localized({
                 fr: "Prochains Trains",
                 en: "Next Trains",
-                es: "Proximos Trenes",
+                es: "Próximos Trenes",
               })
             : localized({
                 fr: "Prochain Train",
                 en: "Next Train",
-                es: "Proximo Tren",
+                es: "Próximo Tren",
               })
         }}
       </h1>
@@ -45,7 +45,7 @@ defineSlots<{
         "
       >
         <span class="platformLabel">{{
-          localized({ fr: "Quai", en: "Platform", es: "Anden" })
+          localized({ fr: "Voie", en: "Platform", es: "Andén" })
         }}</span>
         <div class="platform">
           <span>{{ journey.userStopDeparture.platform || "--" }}</span>
