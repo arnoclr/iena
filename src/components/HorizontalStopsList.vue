@@ -11,75 +11,85 @@ const props = defineProps<{
 const LINE_HEIGHT_VH = 8;
 
 const stopsSpan = ref<HTMLSpanElement>();
-const stopsPagesCount = ref<number>();
-const currentPage = ref<number>(0);
-const stopsPageHeight = ref<number>(0);
-const isTransitionEnabled = ref<boolean>(true);
+const stopsPagesCount = ref(0);
+const currentPage = ref(0);
+const stopsPageHeight = ref(0);
+const isGoingBackToFirstLine = ref(false);
 
-function vhToPx(vh: number): number {
+function getViewportHeightInPixels(vh: number): number {
   return (window.innerHeight * vh) / 100;
 }
 
-function lowestEven(num: number): number {
-  return num % 2 === 0 ? num : num - 1;
-}
-
-function updateJourneyStopsPagesCount() {
+function calculatePaginationMetrics() {
   if (!stopsSpan.value) {
     return;
   }
-  const cellHeight = vhToPx(LINE_HEIGHT_VH);
+
+  const cellHeight = getViewportHeightInPixels(LINE_HEIGHT_VH);
   const spanHeight = stopsSpan.value.scrollHeight;
-  stopsPagesCount.value = lowestEven(Math.ceil(spanHeight / cellHeight));
-  stopsPageHeight.value = spanHeight / stopsPagesCount.value;
+
+  stopsPagesCount.value = Math.ceil(spanHeight / cellHeight);
+  stopsPageHeight.value =
+    stopsPagesCount.value > 0 ? spanHeight / stopsPagesCount.value : 0;
 }
 
-function goToNextPage() {
-  if (!stopsPagesCount.value || stopsPagesCount.value <= 2) {
-    return;
-  }
-  currentPage.value++;
-  if (currentPage.value >= stopsPagesCount.value / 2 + 1) {
-    isTransitionEnabled.value = false;
+function resetPagination() {
+  isGoingBackToFirstLine.value = true;
+
+  setTimeout(() => {
     currentPage.value = 0;
     setTimeout(() => {
-      isTransitionEnabled.value = true;
-      goToNextPage();
-    }, 200);
-  }
+      isGoingBackToFirstLine.value = false;
+    }, 50);
+  }, 250);
 }
 
-watch(() => props.stops, updateJourneyStopsPagesCount);
+function advanceToNextPage() {
+  if (!stopsPagesCount.value || stopsPagesCount.value <= 1) {
+    return;
+  }
+
+  if (currentPage.value >= stopsPagesCount.value - 1) {
+    resetPagination();
+    return;
+  }
+
+  currentPage.value++;
+}
+
+watch(() => props.stops, calculatePaginationMetrics, { immediate: true });
 
 onMounted(() => {
-  updateJourneyStopsPagesCount();
-  window.addEventListener("resize", updateJourneyStopsPagesCount);
-  window.addEventListener("stopsListChange", goToNextPage);
+  calculatePaginationMetrics();
+  window.addEventListener("resize", calculatePaginationMetrics);
+  window.addEventListener("stopsListChange", advanceToNextPage);
 });
 
 onUnmounted(() => {
-  window.removeEventListener("resize", updateJourneyStopsPagesCount);
-  window.removeEventListener("stopsListChange", goToNextPage);
+  window.removeEventListener("resize", calculatePaginationMetrics);
+  window.removeEventListener("stopsListChange", advanceToNextPage);
 });
 </script>
 
 <template>
-  <!-- {{ currentPage }} / {{ stopsPagesCount }} -->
   <div class="journey">
     <span
       ref="stopsSpan"
       class="group"
-      :class="{ transition: isTransitionEnabled }"
       :style="{
         transform: `translateY(-${currentPage * stopsPageHeight}px)`,
         lineHeight: `${LINE_HEIGHT_VH}vh`,
       }"
+      :class="{
+        animationDisabled: isGoingBackToFirstLine,
+      }"
     >
-      <template v-for="_ in 2">
+      <template v-for="stop in stops.slice(1)" :key="stop.id">
+        <wbr />
         <span
-          v-for="stop in stops.slice(1)"
           class="stop"
           :class="{ closed: closedStops.has(stop.id) }"
+          :style="{ opacity: isGoingBackToFirstLine ? 0 : 1 }"
         >
           <span class="chevron">&nbsp;&gt;&nbsp;</span>
           <svg
@@ -96,7 +106,6 @@ onUnmounted(() => {
           </svg>
           <span class="name">{{ Strings.abbreviate(stop.name) }}</span>
         </span>
-        <br />
       </template>
     </span>
   </div>
@@ -107,9 +116,6 @@ onUnmounted(() => {
   display: block;
   color: var(--text-light);
   font-size: 6vh;
-}
-
-.journey {
   height: 6vh;
   overflow: hidden;
 }
@@ -117,11 +123,10 @@ onUnmounted(() => {
 .journey .group {
   margin-top: -1.1vh;
   display: inline-block;
-  height: 6.6vh;
 }
 
-.journey .group.transition {
-  transition: transform 0.5s ease-in-out;
+.journey .group:not(.animationDisabled) {
+  transition: all 0.5s ease-in-out;
 }
 
 .stop.closed .name {
@@ -143,5 +148,10 @@ onUnmounted(() => {
 
 .stop:not(.closed) .xmark {
   display: none;
+}
+
+.stop {
+  transition: opacity 0.2s ease-in-out;
+  white-space: nowrap;
 }
 </style>

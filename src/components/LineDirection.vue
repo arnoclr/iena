@@ -170,11 +170,12 @@ span.direction {
 span.journeyCode,
 span.vehicleNumber {
   min-width: 11vh;
+  font-family: "Roboto Mono", monospace;
+  font-weight: 400;
 }
 
 span.journeyCode {
   font-size: 4.7vh;
-  font-family: monospace;
 }
 
 .cancelled span.journeyCode,
