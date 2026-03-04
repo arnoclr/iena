@@ -52,10 +52,10 @@ onUnmounted(() => {
       time.atStop
         ? localized({ fr: "à quai", en: "", es: "en el andén" })
         : time.approaching
-        ? localized({ fr: "à l'approche", en: "approaching", es: "" })
-        : time.text
+          ? localized({ fr: "à l'approche", en: "approaching", es: "" })
+          : time.text
     }}</span>
-    <span class="min" v-if="time.showMinutesLabel">min</span>
+    <span class="min" v-if="time.showMinutesLabel">&nbsp;min</span>
   </span>
 </template>
 

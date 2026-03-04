@@ -183,15 +183,19 @@ article {
   place-items: center;
   background-color: white;
   color: var(--background);
-  border: calc(var(--border-radius) / 2) solid var(--background);
+  border: calc(var(--border-radius) * 0.7) solid var(--background);
   height: var(--platform-width);
   width: var(--platform-width);
   font-weight: bold;
   font-size: 6vh;
-  border-radius: 0 1vh 1vh 0;
+  border-radius: 0 var(--border-radius) var(--border-radius) 0;
   border-left: none;
   box-shadow: calc(-1 * var(--border-radius)) 0 0 0 var(--background);
   box-sizing: border-box;
+}
+
+.platform span {
+  transform: translateY(4%);
 }
 
 .platform.bus {
