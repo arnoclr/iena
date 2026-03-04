@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { computed, onMounted, onUnmounted, ref } from "vue";
+import { localized } from "../language";
 import type { SimpleStop } from "../services/Wagon";
 import VerticalStop from "./VerticalStop.vue";
 import WithFade from "./animations/WithFade.vue";
