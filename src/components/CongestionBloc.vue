@@ -11,7 +11,7 @@ defineProps<{
 <template>
   <article v-if="congestion?.wagons?.length || 0 > 0">
     <h2>
-      {{ localized({ fr: "Affluence", en: "Crowding", es: "Crowding" }) }}
+      {{ localized({ fr: "Affluence", en: "Crowding", es: "Ocupación" }) }}
     </h2>
     <div class="centered">
       <Congestion
@@ -20,8 +20,8 @@ defineProps<{
       ></Congestion>
     </div>
     <span class="labels">
-      <span>{{ localized({ fr: "Arrière", en: "Rear", es: "Atrás" }) }} </span>
-      <span>{{ localized({ fr: "Avant", en: "Front", es: "Delante" }) }}</span>
+      <span>{{ localized({ fr: "Arrière", en: "Rear", es: "Cola" }) }} </span>
+      <span>{{ localized({ fr: "Avant", en: "Front", es: "Cabeza" }) }}</span>
     </span>
   </article>
 </template>

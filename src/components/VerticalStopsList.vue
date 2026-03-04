@@ -46,7 +46,7 @@ onUnmounted(() => {
 <template>
   <div class="grid">
     <aside>
-      <span>Page</span>
+      <span>{{ localized({ fr: "Page", en: "Page", es: "Página" }) }}</span>
       <br />
       <span
         ><WithFade>

@@ -38,7 +38,7 @@ const labelSeverity = computed(() => {
             localized({
               fr: "Prendre le bus de remplacement",
               en: "Take the replacement bus",
-              es: "Prendre le bus de remplacement",
+              es: "Tomar el autobús de sustitución",
             })
           }}
         </span>
@@ -56,7 +56,7 @@ const labelSeverity = computed(() => {
           {{
             // TODO: add translation
             localized({
-              fr: "Desserte modifiée",
+              fr: "Attention, desserte modifiée",
               en: "Attention, stops changed",
               es: "Desserte modifiée",
             })
