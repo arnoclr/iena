@@ -68,12 +68,23 @@ export type SimpleJourney = {
   };
 };
 
-function processSVG(svg: string): string {
-  return svg
+function processSVG(
+  svg: string,
+  replacementColors: Record<string, string>,
+): string {
+  let result = svg
     .replace(/width="[^"]+"/, "")
     .replace(/height="[^"]+"/, `height="100%"`)
-    .replace('font-family="', 'font-weight="bold" font-family="Parisine, ')
-    .replace('font-weight="normal"', 'font-weight="bold"');
+    .replace('font-family="', 'font-family="Parisine, ');
+
+  for (const [originalColor, replacementColor] of Object.entries(
+    replacementColors,
+  )) {
+    const regex = new RegExp(originalColor, "gi");
+    result = result.replace(regex, replacementColor);
+  }
+
+  return result;
 }
 
 export class Wagon {
@@ -99,8 +110,8 @@ export class Wagon {
       new Set(
         stopDto.stops
           .map((stop: any) => stop.lines.map((line: any) => line))
-          .flat()
-      )
+          .flat(),
+      ),
     );
     return {
       id: stopDto.id,
@@ -116,8 +127,14 @@ export class Wagon {
       number: lineDto.number,
       backgroundColor: lineDto.backgroundColor,
       textColor: lineDto.textColor,
-      pictoSvg: processSVG(lineDto.modeSvg ?? ""),
-      numberShapeSvg: processSVG(lineDto.numberShapeSvg ?? ""),
+      pictoSvg: processSVG(
+        lineDto.modeSvg ?? "",
+        lineDto.replacementColors?.dark ?? {},
+      ),
+      numberShapeSvg: processSVG(
+        lineDto.numberShapeSvg ?? "",
+        lineDto.replacementColors?.dark ?? {},
+      ),
       importance: lineDto.importance,
       isOnRoad: lineDto.isOnRoad,
     };
@@ -128,7 +145,7 @@ export class Wagon {
     lineId: string,
     stopIds: string[],
     /** @deprecated */
-    isTerminus: boolean = false
+    isTerminus: boolean = false,
   ): Promise<SimpleDeparture[]> {
     let params = new URLSearchParams({
       action: "departures",
@@ -154,7 +171,7 @@ export class Wagon {
           destination: {
             name: departure.destinationLabel,
             averagePosition: this.positionFromDTO(
-              departure.destination.averagePosition
+              departure.destination.averagePosition,
             ),
           },
           source: {
@@ -163,12 +180,12 @@ export class Wagon {
           leavesAt: dayjs(
             departure.departure?.realTime ||
               departure.departure?.theoretical ||
-              "invalid"
+              "invalid",
           ),
           arrivesAt: dayjs(
             departure.arrival?.realTime ||
               departure.arrival?.theoretical ||
-              "invalid"
+              "invalid",
           ),
           isCancelled:
             departure.arrival.canceled || departure.departure.canceled,
@@ -182,7 +199,7 @@ export class Wagon {
       })
       .filter(
         (departure: SimpleDeparture) =>
-          departure.leavesAt.isValid() && departure.leavesAt.isAfter(dayjs())
+          departure.leavesAt.isValid() && departure.leavesAt.isAfter(dayjs()),
       );
   }
 
@@ -201,7 +218,7 @@ export class Wagon {
     journeyId: string,
     vehicleNumber?: string,
     journeyCode?: string,
-    userStopAreaId?: string
+    userStopAreaId?: string,
   ): Promise<Omit<SimpleJourney, "userStopDeparture">> {
     let params = new URLSearchParams({
       action: "journey",
@@ -226,20 +243,22 @@ export class Wagon {
       return {
         ...this.stopFromDTO(stop.stop, []),
         arrival: dayjs(
-          stop.arrivesAt?.realTime || stop.arrivesAt?.theoretical || "invalid"
+          stop.arrivesAt?.realTime || stop.arrivesAt?.theoretical || "invalid",
         ),
         departure: dayjs(
-          stop.leavesAt?.realTime || stop.leavesAt?.theoretical || "invalid"
+          stop.leavesAt?.realTime || stop.leavesAt?.theoretical || "invalid",
         ),
       };
     }) satisfies SimpleStopTime[];
 
     const line = this.lineFromDTO(json.data.line);
     const skippedStops = new Set<string>(
-      json.data.stops.filter((x: any) => x.isSkipped).map((x: any) => x.stop.id)
+      json.data.stops
+        .filter((x: any) => x.isSkipped)
+        .map((x: any) => x.stop.id),
     );
     const closedStops = new Set<string>(
-      json.data.stops.filter((x: any) => x.isClosed).map((x: any) => x.stop.id)
+      json.data.stops.filter((x: any) => x.isClosed).map((x: any) => x.stop.id),
     );
 
     return {
@@ -249,7 +268,7 @@ export class Wagon {
         .slice(stops.findIndex((stop: any) => stop.id === userStopAreaId))
         .filter(
           (x) =>
-            skippedStops.has(x.id) === false || closedStops.has(x.id) === true
+            skippedStops.has(x.id) === false || closedStops.has(x.id) === true,
         ),
       line,
       closedStops,
@@ -257,12 +276,12 @@ export class Wagon {
       congestion: json.data.congestion
         ? {
             average: this.percentageToCongestion(
-              json.data.congestion.percentage || 0
+              json.data.congestion.percentage || 0,
             ),
             wagons: json.data.congestion.wagons?.map((wagons: number[]) =>
               wagons.map((percentage: number) =>
-                this.percentageToCongestion(percentage)
-              )
+                this.percentageToCongestion(percentage),
+              ),
             ),
           }
         : undefined,
