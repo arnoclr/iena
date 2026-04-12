@@ -34,9 +34,9 @@ defineProps<{
         <h2>Information travaux</h2>
       </header>
       <span
-        >Retrouvez toutes les informations sur l’appli Ile-de-France Mobilités,
-        le site Transilien.com, Ratp.fr, SNCF Connect ou votre appli de mobilité
-        et sur le fil Twitter de votre ligne.</span
+        >Retrouvez toutes les informations sur l’appli Wagon, le site
+        getwagon.fr ou votre appli de mobilité et sur le fil Twitter de votre
+        ligne.</span
       >
     </aside>
     <aside v-else :style="{ height: '17.2vh' }">
