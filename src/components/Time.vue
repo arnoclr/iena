@@ -5,6 +5,7 @@ import { localized } from "../language";
 
 const props = defineProps<{
   time: Dayjs;
+  arrivesAt?: Dayjs;
 }>();
 let interval: number | null = null;
 
@@ -19,7 +20,17 @@ const time = ref<{
 });
 
 function updateTime() {
-  const remainingMinutes = props.time.diff(dayjs(), "minutes");
+  const now = dayjs();
+
+  if (props.arrivesAt && !props.arrivesAt.isAfter(now)) {
+    time.value = {
+      text: "",
+      atStop: true,
+    };
+    return;
+  }
+
+  const remainingMinutes = props.time.diff(now, "minutes");
   if (remainingMinutes > 59) {
     time.value = {
       text: props.time.format("HH:mm"),

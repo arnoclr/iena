@@ -102,7 +102,7 @@ const direction = computed(() => {
       <span v-if="departure.isCancelled">{{
         localized({ fr: "supprimé", en: "cancelled", es: "suprimido" })
       }}</span>
-      <Time v-else-if="departure.leavesAt" :time="departure.leavesAt"></Time>
+      <Time v-else-if="departure.leavesAt" :time="departure.leavesAt" :arrives-at="departure.arrivesAt"></Time>
     </span>
   </div>
 </template>
