@@ -27,7 +27,8 @@ export async function getNextJourneys(
   stopArea: string,
   lineIds: string[],
   /** @ts-ignore */
-  platforms?: string[]
+  platforms?: string[],
+  direction?: "0" | "1"
 ): Promise<SimpleJourney[]> {
   const departures: SimpleDeparture[] = [];
   const journeys: SimpleJourney[] = [];
@@ -44,6 +45,7 @@ export async function getNextJourneys(
 
   for (const departure of departures
     .sort((a, b) => a.leavesAt.diff(b.leavesAt))
+    .filter((departure) => !direction || departure.branchHash === direction)
     // .filter((x) => platforms?.includes(x.platform || "") || !platforms)
     .slice(0, count)) {
     const journey = await Wagon.journey(

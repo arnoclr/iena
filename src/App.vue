@@ -16,7 +16,7 @@ const params = ref<ReturnType<typeof getParamsFromUrl>>();
 const stopsListChangeEvent = new Event("stopsListChange");
 
 async function updateJourneys() {
-  const { lines, stop, platforms, coordinates, aimedDepartureCount } =
+  const { lines, stop, platforms, coordinates, aimedDepartureCount, direction } =
     params.value || {};
 
   if (!lines || !stop || !coordinates) {
@@ -29,6 +29,7 @@ async function updateJourneys() {
     stop,
     lines,
     platforms,
+    direction,
   );
 }
 
