@@ -55,8 +55,8 @@ export async function getNextJourneys(
       departure.journeyCode,
       stopArea,
     );
-    if (departure.destination.name === "(?)" && journey.nextStops.length > 0) {
-      departure.destination.name = journey.nextStops.at(-1)?.name ?? "";
+    if (departure.destination.name === "(?)" && journey.stops.length > 0) {
+      departure.destination.name = journey.stops.at(-1)?.name ?? "";
     }
     journeys.push({
       userStopDeparture: departure,
