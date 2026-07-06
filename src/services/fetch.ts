@@ -28,7 +28,7 @@ export async function getNextJourneys(
   lineIds: string[],
   /** @ts-ignore */
   platforms?: string[],
-  direction?: "0" | "1"
+  direction?: "0" | "1",
 ): Promise<SimpleJourney[]> {
   const departures: SimpleDeparture[] = [];
   const journeys: SimpleJourney[] = [];
@@ -53,8 +53,11 @@ export async function getNextJourneys(
       departure.id,
       departure.vehicleNumber,
       departure.journeyCode,
-      stopArea
+      stopArea,
     );
+    if (departure.destination.name === "(?)" && journey.nextStops.length > 0) {
+      departure.destination.name = journey.nextStops.at(-1)?.name ?? "";
+    }
     journeys.push({
       userStopDeparture: departure,
       ...journey,
@@ -92,7 +95,7 @@ export async function getNextJourneys(
     }
     // fill the via metadata
     const patterns = journeysPerDestination.get(
-      journey.userStopDeparture.destination.name
+      journey.userStopDeparture.destination.name,
     );
     if (patterns?.size === 1) {
       continue;
@@ -111,7 +114,7 @@ export async function getNextJourneys(
     }
     journey.metadata.via = getFirstUniqueElement(
       new Set(journey.nextStops.map((stop) => stop.name)),
-      stopsOfOtherJourneys
+      stopsOfOtherJourneys,
     );
   }
 
