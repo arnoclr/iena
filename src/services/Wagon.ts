@@ -68,6 +68,34 @@ export type SimpleJourney = {
   };
 };
 
+interface StopTimeDTO {
+  theoretical?: string;
+  realTime?: string;
+}
+
+function resolveTimes(
+  departure: StopTimeDTO | undefined,
+  arrival: StopTimeDTO | undefined,
+): { leavesAt: string | undefined; arrivesAt: string | undefined } {
+  const delayOf = (t: StopTimeDTO | undefined): number | null =>
+    t?.theoretical && t?.realTime
+      ? dayjs(t.realTime).diff(dayjs(t.theoretical))
+      : null;
+
+  const applyDelay = (
+    target: StopTimeDTO | undefined,
+    delay: number | null,
+  ): string | undefined =>
+    target?.theoretical && !target?.realTime && delay !== null
+      ? dayjs(target.theoretical).add(delay).toISOString()
+      : target?.realTime || target?.theoretical;
+
+  return {
+    leavesAt: applyDelay(departure, delayOf(arrival)),
+    arrivesAt: applyDelay(arrival, delayOf(departure)),
+  };
+}
+
 function processSVG(
   svg: string,
   replacementColors: Record<string, string>,
@@ -167,6 +195,10 @@ export class Wagon {
 
     return json.data.departures
       .map((departure: any) => {
+        const { leavesAt, arrivesAt } = resolveTimes(
+          departure.departure,
+          departure.arrival,
+        );
         return {
           destination: {
             name: departure.destinationLabel,
@@ -177,16 +209,8 @@ export class Wagon {
           source: {
             id: departure.source.id,
           },
-          leavesAt: dayjs(
-            departure.departure?.realTime ||
-              departure.departure?.theoretical ||
-              "invalid",
-          ),
-          arrivesAt: dayjs(
-            departure.arrival?.realTime ||
-              departure.arrival?.theoretical ||
-              "invalid",
-          ),
+          leavesAt: dayjs(leavesAt || "invalid"),
+          arrivesAt: dayjs(arrivesAt || "invalid"),
           isCancelled:
             departure.arrival.canceled || departure.departure.canceled,
           id: departure.journeyId,
@@ -240,14 +264,14 @@ export class Wagon {
     const json = await response.json();
 
     const stops = json.data.stops.map((stop: any) => {
+      const { leavesAt, arrivesAt } = resolveTimes(
+        stop.leavesAt,
+        stop.arrivesAt,
+      );
       return {
         ...this.stopFromDTO(stop.stop, []),
-        arrival: dayjs(
-          stop.arrivesAt?.realTime || stop.arrivesAt?.theoretical || "invalid",
-        ),
-        departure: dayjs(
-          stop.leavesAt?.realTime || stop.leavesAt?.theoretical || "invalid",
-        ),
+        arrival: dayjs(arrivesAt || "invalid"),
+        departure: dayjs(leavesAt || "invalid"),
       };
     }) satisfies SimpleStopTime[];
 
