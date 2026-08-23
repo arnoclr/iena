@@ -2,10 +2,11 @@
 import Clock from "../components/Clock.vue";
 import DepartureBloc from "../components/DepartureBloc.vue";
 import SideDisruptionPane from "../components/SideDisruptionPane.vue";
-import type { SimpleJourney } from "../services/Wagon";
+import type { SimpleJourney, SimpleNotification } from "../services/Wagon";
 
 defineProps<{
   journeys: SimpleJourney[];
+  notifications?: SimpleNotification[];
 }>();
 </script>
 
@@ -23,6 +24,7 @@ defineProps<{
       class="pane"
       side="BOTTOM"
       :disruptions="[]"
+      :notifications="notifications"
     ></SideDisruptionPane>
     <Clock class="clock"></Clock>
   </TransitionGroup>

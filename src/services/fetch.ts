@@ -2,6 +2,7 @@ import {
   Wagon,
   type SimpleDeparture,
   type SimpleJourney,
+  type SimpleNotification,
   type SimpleStop,
 } from "./Wagon";
 
@@ -21,6 +22,27 @@ function getFirstUniqueElement<T>(of: Set<T>, notIn: Set<T>): T | undefined {
   return undefined;
 }
 
+export function getLastNotificationPerThread(
+  notifications: SimpleNotification[],
+): SimpleNotification[] {
+  const latestByThread = new Map<string, SimpleNotification>();
+  for (const notification of notifications) {
+    if (!notification.threadId || !notification.contentFR) {
+      continue;
+    }
+    const existing = latestByThread.get(notification.threadId);
+    if (
+      !existing ||
+      (notification.publishedAt &&
+        (!existing.publishedAt ||
+          notification.publishedAt.isAfter(existing.publishedAt)))
+    ) {
+      latestByThread.set(notification.threadId, notification);
+    }
+  }
+  return Array.from(latestByThread.values());
+}
+
 export async function getNextJourneys(
   count: number,
   coordinates: string,
@@ -29,12 +51,19 @@ export async function getNextJourneys(
   /** @ts-ignore */
   platforms?: string[],
   direction?: "0" | "1",
-): Promise<SimpleJourney[]> {
+): Promise<{
+  journeys: SimpleJourney[];
+  notifications: SimpleNotification[];
+}> {
   const departures: SimpleDeparture[] = [];
   const journeys: SimpleJourney[] = [];
+  const notifications: SimpleNotification[] = [];
 
   for (const line of lineIds) {
-    departures.push(...(await Wagon.departures(coordinates, line, [stopArea])));
+    const { departures: lineDepartures, notifications: lineNotifications } =
+      await Wagon.departures(coordinates, line, [stopArea]);
+    departures.push(...lineDepartures);
+    notifications.push(...lineNotifications);
   }
 
   const journeysPattern = new Map<
@@ -118,5 +147,8 @@ export async function getNextJourneys(
     );
   }
 
-  return journeys;
+  return {
+    journeys,
+    notifications: getLastNotificationPerThread(notifications),
+  };
 }

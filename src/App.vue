@@ -5,13 +5,14 @@ import CongestionBloc from "./components/CongestionBloc.vue";
 import { SIMPLE_JOURNEY } from "./mock";
 import NextTrain from "./screens/NextTrain.vue";
 import NextTrainsWideList from "./screens/NextTrainsWideList.vue";
-import type { SimpleJourney } from "./services/Wagon";
+import type { SimpleJourney, SimpleNotification } from "./services/Wagon";
 import { getNextJourneys } from "./services/fetch";
 import { useLangStore } from "./stores/lang";
 import { getParamsFromUrl } from "./url";
 
 const langStore = useLangStore();
 const journeys = ref<SimpleJourney[]>([]);
+const notifications = ref<SimpleNotification[]>([]);
 const params = ref<ReturnType<typeof getParamsFromUrl>>();
 const stopsListChangeEvent = new Event("stopsListChange");
 
@@ -23,7 +24,7 @@ async function updateJourneys() {
     return;
   }
 
-  journeys.value = await getNextJourneys(
+  const result = await getNextJourneys(
     aimedDepartureCount || 1,
     coordinates,
     stop,
@@ -31,6 +32,8 @@ async function updateJourneys() {
     platforms,
     direction,
   );
+  journeys.value = result.journeys;
+  notifications.value = result.notifications;
 }
 
 setInterval(() => {
@@ -54,6 +57,7 @@ onMounted(() => {
     v-if="(params?.aimedDepartureCount || 1) <= 3"
     :journey="journeys.at(0) || SIMPLE_JOURNEY"
     :journeys-count="journeys.length"
+    :notifications="notifications"
   >
     <CongestionBloc
       v-if="params?.aimedDepartureCount === 1 && journeys.at(0)?.congestion"
@@ -66,7 +70,11 @@ onMounted(() => {
       ></BigDepartureBloc>
     </div>
   </NextTrain>
-  <NextTrainsWideList v-else :journeys="journeys"></NextTrainsWideList>
+  <NextTrainsWideList
+    v-else
+    :journeys="journeys"
+    :notifications="notifications"
+  ></NextTrainsWideList>
 </template>
 
 <style scoped></style>

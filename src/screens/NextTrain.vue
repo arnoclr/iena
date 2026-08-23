@@ -4,11 +4,12 @@ import Clock from "../components/Clock.vue";
 import Label from "../components/Label.vue";
 import SideDisruptionPane from "../components/SideDisruptionPane.vue";
 import { localized } from "../language";
-import type { SimpleJourney } from "../services/Wagon";
+import type { SimpleJourney, SimpleNotification } from "../services/Wagon";
 
 defineProps<{
   journey: SimpleJourney;
   journeysCount: number;
+  notifications?: SimpleNotification[];
 }>();
 
 defineSlots<{
@@ -56,7 +57,11 @@ defineSlots<{
   <main>
     <div>
       <Label style="opacity: 0" severity="LOW">x</Label>
-      <SideDisruptionPane side="LEFT" :disruptions="[]"></SideDisruptionPane>
+      <SideDisruptionPane
+          side="LEFT"
+          :disruptions="[]"
+          :notifications="notifications"
+        ></SideDisruptionPane>
     </div>
     <div class="journey">
       <BigDepartureBloc

@@ -25,6 +25,13 @@ export interface Position {
   long: number;
 }
 
+export interface SimpleNotification {
+  contentFR?: string;
+  publishedAt?: Dayjs;
+  estimatedEndTime?: Dayjs;
+  threadId?: string;
+}
+
 export interface SimpleDeparture {
   destination: {
     name: string;
@@ -174,7 +181,10 @@ export class Wagon {
     stopIds: string[],
     /** @deprecated */
     isTerminus: boolean = false,
-  ): Promise<SimpleDeparture[]> {
+  ): Promise<{
+    departures: SimpleDeparture[];
+    notifications: SimpleNotification[];
+  }> {
     let params = new URLSearchParams({
       action: "departures",
       coordinates,
@@ -193,38 +203,52 @@ export class Wagon {
 
     const json = await response.json();
 
-    return json.data.departures
-      .map((departure: any) => {
-        const { leavesAt, arrivesAt } = resolveTimes(
-          departure.departure,
-          departure.arrival,
-        );
-        return {
-          destination: {
-            name: departure.destinationLabel,
-            averagePosition: this.positionFromDTO(
-              departure.destination.averagePosition,
-            ),
-          },
-          source: {
-            id: departure.source.id,
-          },
-          leavesAt: dayjs(leavesAt || "invalid"),
-          arrivesAt: dayjs(arrivesAt || "invalid"),
-          isCancelled:
-            departure.arrival.canceled || departure.departure.canceled,
-          id: departure.journeyId,
-          branchHash: departure.branchHash,
-          journeyCode: departure.journeyCode,
-          vehicleLength: departure.vehicleLength,
-          platform: departure.platform,
-          vehicleNumber: departure.vehicleNumber,
-        };
-      })
-      .filter(
-        (departure: SimpleDeparture) =>
-          departure.leavesAt.isValid() && departure.leavesAt.isAfter(dayjs()),
-      );
+    return {
+      departures: json.data.departures
+        .map((departure: any) => {
+          const { leavesAt, arrivesAt } = resolveTimes(
+            departure.departure,
+            departure.arrival,
+          );
+          return {
+            destination: {
+              name: departure.destinationLabel,
+              averagePosition: this.positionFromDTO(
+                departure.destination.averagePosition,
+              ),
+            },
+            source: {
+              id: departure.source.id,
+            },
+            leavesAt: dayjs(leavesAt || "invalid"),
+            arrivesAt: dayjs(arrivesAt || "invalid"),
+            isCancelled:
+              departure.arrival.canceled || departure.departure.canceled,
+            id: departure.journeyId,
+            branchHash: departure.branchHash,
+            journeyCode: departure.journeyCode,
+            vehicleLength: departure.vehicleLength,
+            platform: departure.platform,
+            vehicleNumber: departure.vehicleNumber,
+          };
+        })
+        .filter(
+          (departure: SimpleDeparture) =>
+            departure.leavesAt.isValid() && departure.leavesAt.isAfter(dayjs()),
+        ),
+      notifications: (json.data.notifications ?? []).map(
+        (notification: any) => ({
+          contentFR: notification.contentFR,
+          publishedAt: notification.publishedAt
+            ? dayjs(notification.publishedAt)
+            : undefined,
+          estimatedEndTime: notification.estimatedEndTime
+            ? dayjs(notification.estimatedEndTime)
+            : undefined,
+          threadId: notification.threadId,
+        }),
+      ),
+    };
   }
 
   private static percentageToCongestion(percentage: number): Congestion {
