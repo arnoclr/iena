@@ -93,7 +93,6 @@ export const SIMPLE_JOURNEY: SimpleJourney = {
     })
   ),
   closedStops: new Set(["3"]),
-  skippedStops: new Set([]),
   metadata: {
     via: "Aéroport Charles de Gaulle",
     direct: false,

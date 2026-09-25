@@ -63,7 +63,6 @@ export type SimpleJourney = {
   stops: SimpleStopTime[];
   nextStops: SimpleStopTime[];
   closedStops: Set<string>;
-  skippedStops: Set<string>;
   congestion?: {
     average: Congestion;
     wagons: Congestion[][];
@@ -287,7 +286,10 @@ export class Wagon {
 
     const json = await response.json();
 
-    const stops = json.data.stops.map((stop: any) => {
+    const visibleStops = json.data.stops.filter(
+      (stop: any) => !stop.isSkipped || stop.isClosed,
+    );
+    const stops: SimpleStopTime[] = visibleStops.map((stop: any) => {
       const { leavesAt, arrivesAt } = resolveTimes(
         stop.leavesAt,
         stop.arrivesAt,
@@ -297,30 +299,21 @@ export class Wagon {
         arrival: dayjs(arrivesAt || "invalid"),
         departure: dayjs(leavesAt || "invalid"),
       };
-    }) satisfies SimpleStopTime[];
+    });
 
     const line = this.lineFromDTO(json.data.line);
-    const skippedStops = new Set<string>(
-      json.data.stops
-        .filter((x: any) => x.isSkipped)
-        .map((x: any) => x.stop.id),
-    );
     const closedStops = new Set<string>(
-      json.data.stops.filter((x: any) => x.isClosed).map((x: any) => x.stop.id),
+      visibleStops.filter((x: any) => x.isClosed).map((x: any) => x.stop.id),
     );
 
     return {
       id: journeyId,
       stops,
-      nextStops: [...stops]
-        .slice(stops.findIndex((stop: any) => stop.id === userStopAreaId))
-        .filter(
-          (x) =>
-            skippedStops.has(x.id) === false || closedStops.has(x.id) === true,
-        ),
+      nextStops: stops.slice(
+        Math.max(0, stops.findIndex((stop) => stop.id === userStopAreaId)),
+      ),
       line,
       closedStops,
-      skippedStops,
       congestion: json.data.congestion
         ? {
             average: this.percentageToCongestion(
